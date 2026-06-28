@@ -23,6 +23,15 @@ export default function Navbar() {
 
       // Determine active section by checking which section is in view
       const sections = navLinks.map((l) => l.href.slice(1));
+
+      // If user is near the bottom of the page, activate the last section
+      const scrollBottom = window.scrollY + window.innerHeight;
+      const docHeight = document.documentElement.scrollHeight;
+      if (docHeight - scrollBottom < 100) {
+        setActiveSection(sections[sections.length - 1]);
+        return;
+      }
+
       for (let i = sections.length - 1; i >= 0; i--) {
         const el = document.getElementById(sections[i]);
         if (el) {

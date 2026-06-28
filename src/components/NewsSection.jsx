@@ -13,6 +13,7 @@ const newsItems = [
     excerpt: 'Rockstar Games confirms final preparations for the worldwide launch of Grand Theft Auto VI on PlayStation 5 and Xbox Series X|S.',
     image: '/images/hero-bg.png',
     hot: true,
+    readTime: '2 min',
   },
   {
     id: 2,
@@ -22,6 +23,7 @@ const newsItems = [
     excerpt: 'Dual protagonists Jason and Lucia navigate the criminal underworld of Leonida in the most immersive GTA experience ever created.',
     image: '/images/news-thumb.png',
     hot: false,
+    readTime: '3 min',
   },
   {
     id: 3,
@@ -31,6 +33,7 @@ const newsItems = [
     excerpt: 'The fictional state of Leonida brings a vibrant, evolving open world that reacts to player choices and in-game events in real time.',
     image: '/images/ss-downtown.png',
     hot: false,
+    readTime: '4 min',
   },
   {
     id: 4,
@@ -40,11 +43,12 @@ const newsItems = [
     excerpt: 'Details emerge about the next evolution of GTA Online, launching alongside GTA VI with an entirely new economy and social features.',
     image: '/images/ss-nightlife.png',
     hot: false,
+    readTime: '3 min',
   },
 ];
 
 export default function NewsSection() {
-  const [hoveredId, setHoveredId] = useState(null);
+  const [_hoveredId, setHoveredId] = useState(null);
 
   const handleArticleClick = (title) => {
     trackArticleClick(title);
@@ -112,7 +116,7 @@ export default function NewsSection() {
                 <div className="absolute inset-0 bg-gradient-to-t from-gta-card via-transparent to-transparent" />
 
                 {item.hot && (
-                  <div className="absolute top-3 right-3 px-3 py-1 bg-gta-neon text-white text-[10px] font-bold tracking-wider uppercase rounded-full shadow-[0_0_15px_rgba(255,69,0,0.5)]">
+                  <div className="absolute top-3 right-3 px-3 py-1 bg-gta-neon text-white text-[10px] font-bold tracking-wider uppercase rounded-full shadow-[0_0_15px_rgba(255,69,0,0.5)] animate-glow-pulse">
                     🔥 HOT
                   </div>
                 )}
@@ -129,6 +133,8 @@ export default function NewsSection() {
                 <div className="flex items-center gap-2 mb-3 text-xs text-gta-muted">
                   <HiCalendar className="w-3.5 h-3.5" />
                   {item.date}
+                  <span className="text-gta-border">·</span>
+                  <span>{item.readTime} read</span>
                 </div>
 
                 <h3 className="font-display font-bold text-lg sm:text-xl text-white mb-3 group-hover:text-gta-orange transition-colors duration-300 line-clamp-2">

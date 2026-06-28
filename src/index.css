@@ -317,6 +317,31 @@ img {
 
 /* ── Responsive polish ─────────────────────── */
 
+/* GPU-accelerated animation hints */
+.card-hover-glow,
+.glass-card,
+.btn-glow {
+  will-change: transform;
+}
+
+.animate-ken-burns {
+  will-change: transform;
+}
+
+/* Keyboard accessibility focus ring */
+.focus-ring:focus-visible {
+  outline: 2px solid var(--color-gta-orange);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Generic focus-visible for interactive elements */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-gta-orange);
+  outline-offset: 2px;
+}
+
 /* Fix for very small screens */
 @media (max-width: 360px) {
   html {

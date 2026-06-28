@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiX, HiChevronLeft, HiChevronRight, HiDownload } from 'react-icons/hi';
 import { trackButtonClick } from '../utils/analytics';
@@ -15,15 +15,37 @@ const screenshots = [
 
 function Lightbox({ screenshot, screenshots, onClose, onNavigate }) {
   const currentIdx = screenshots.findIndex((s) => s.id === screenshot.id);
+  const containerRef = useRef(null);
+  const touchStartX = useRef(0);
+
+  // Auto-focus for keyboard navigation
+  useEffect(() => {
+    containerRef.current?.focus();
+  }, [screenshot.id]);
 
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'Escape') onClose();
-    if (e.key === 'ArrowLeft') onNavigate(Math.max(0, currentIdx - 1));
-    if (e.key === 'ArrowRight') onNavigate(Math.min(screenshots.length - 1, currentIdx + 1));
+    if (e.key === 'ArrowLeft' && currentIdx > 0) onNavigate(currentIdx - 1);
+    if (e.key === 'ArrowRight' && currentIdx < screenshots.length - 1) onNavigate(currentIdx + 1);
   }, [currentIdx, onClose, onNavigate, screenshots.length]);
+
+  const handleTouchStart = useCallback((e) => {
+    touchStartX.current = e.touches[0].clientX;
+  }, []);
+
+  const handleTouchEnd = useCallback((e) => {
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    const threshold = 50;
+    if (diff > threshold && currentIdx < screenshots.length - 1) {
+      onNavigate(currentIdx + 1);
+    } else if (diff < -threshold && currentIdx > 0) {
+      onNavigate(currentIdx - 1);
+    }
+  }, [currentIdx, onNavigate, screenshots.length]);
 
   return (
     <motion.div
+      ref={containerRef}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -31,6 +53,8 @@ function Lightbox({ screenshot, screenshots, onClose, onNavigate }) {
       className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex items-center justify-center"
       onClick={onClose}
       onKeyDown={handleKeyDown}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
       tabIndex={0}
       role="dialog"
       aria-label="Screenshot viewer"
@@ -43,6 +67,11 @@ function Lightbox({ screenshot, screenshots, onClose, onNavigate }) {
       >
         <HiX size={28} />
       </button>
+
+      {/* Image counter badge */}
+      <div className="absolute top-6 left-1/2 -translate-x-1/2 z-10 px-4 py-1.5 rounded-full glass-card-static text-xs tracking-wider text-gta-muted font-medium">
+        {currentIdx + 1} of {screenshots.length}
+      </div>
 
       {/* Navigation */}
       {currentIdx > 0 && (

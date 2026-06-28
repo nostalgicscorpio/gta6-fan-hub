@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
+import { trackButtonClick } from '../utils/analytics';
 
 // November 16, 2026 at midnight UTC
 const RELEASE_DATE = new Date('2026-11-16T00:00:00Z').getTime();
@@ -58,6 +59,7 @@ function Separator() {
 }
 
 export default function CountdownTimer() {
+  const [copied, setCopied] = useState(false);
   const [time, setTime] = useState(getTimeLeft);
   const prevTimeRef = useRef(time);
 
@@ -86,6 +88,19 @@ export default function CountdownTimer() {
   }, []);
 
   const prev = prevTimeRef.current;
+
+  const handleShare = useCallback(() => {
+    trackButtonClick('Share Countdown');
+    const msg = time.launched
+      ? '🎮 GTA VI is NOW AVAILABLE! gta6fanhub.com'
+      : `🎮 Only ${time.days} days until GTA VI launches on November 16, 2026! gta6fanhub.com`;
+    navigator.clipboard.writeText(msg).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }).catch(() => {
+      // Clipboard API not available — silently fail
+    });
+  }, [time.days, time.launched]);
 
   return (
     <section id="countdown" className="relative py-16 sm:py-24 lg:py-32">
@@ -143,10 +158,19 @@ export default function CountdownTimer() {
           transition={{ delay: 0.6 }}
           className="mt-10 sm:mt-14 flex flex-col items-center gap-4"
         >
-          <div className="flex gap-3">
+          <div className="flex gap-3 flex-wrap justify-center">
             <span className="px-4 py-2 rounded-lg glass-card-static text-xs tracking-wider uppercase text-gta-muted font-medium">PlayStation 5</span>
             <span className="px-4 py-2 rounded-lg glass-card-static text-xs tracking-wider uppercase text-gta-muted font-medium">Xbox Series X|S</span>
           </div>
+          <button
+            onClick={handleShare}
+            className="mt-2 px-5 py-2.5 rounded-lg glass-card text-xs tracking-wider uppercase text-gta-orange font-bold hover:bg-gta-orange/20 hover:shadow-[0_0_20px_rgba(255,106,0,0.2)] transition-all duration-300 cursor-pointer flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+            </svg>
+            {copied ? 'Copied!' : 'Share Countdown'}
+          </button>
         </motion.div>
       </div>
     </section>

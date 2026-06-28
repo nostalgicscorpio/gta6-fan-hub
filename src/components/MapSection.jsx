@@ -40,28 +40,18 @@ export default function MapSection() {
           className="relative glass-card rounded-2xl overflow-hidden"
         >
           {/* Map background */}
-          <div className="relative aspect-[16/9] sm:aspect-[21/9] bg-gradient-to-br from-gta-dark via-gta-card to-gta-dark">
-            {/* Grid lines for map feel */}
-            <div className="absolute inset-0 grid-pattern opacity-60" />
-
-            {/* Landmass shape — abstract Florida/Leonida silhouette */}
-            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="landGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="rgba(255,106,0,0.08)" />
-                  <stop offset="100%" stopColor="rgba(255,45,120,0.05)" />
-                </linearGradient>
-              </defs>
-              <path
-                d="M15,20 Q20,15 35,18 Q50,10 65,15 Q80,12 85,22 Q88,35 82,50 Q78,62 72,68 Q65,75 60,72 Q55,78 48,80 Q40,82 35,75 Q28,70 22,65 Q18,55 15,45 Q12,35 15,20 Z"
-                fill="url(#landGrad)"
-                stroke="rgba(255,106,0,0.2)"
-                strokeWidth="0.3"
-              />
-              {/* Water texture lines */}
-              <line x1="5" y1="85" x2="95" y2="85" stroke="rgba(0,229,255,0.05)" strokeWidth="0.2" />
-              <line x1="5" y1="90" x2="95" y2="90" stroke="rgba(0,229,255,0.03)" strokeWidth="0.2" />
-            </svg>
+          {/* Map background */}
+          <div className="relative aspect-[16/9] sm:aspect-[21/9] overflow-hidden">
+            {/* Actual map image */}
+            <img
+              src="/images/leonida-map.png"
+              alt="Map of Leonida — Vice City and surrounding regions"
+              className="w-full h-full object-cover transition-transform duration-[20s] hover:scale-105"
+              loading="lazy"
+            />
+            {/* Overlay for depth & contrast */}
+            <div className="absolute inset-0 bg-gradient-to-t from-gta-card/80 via-transparent to-gta-card/40" />
+            <div className="absolute inset-0 bg-gta-black/20" />
 
             {/* Location pins */}
             {locations.map((loc, i) => (
@@ -75,8 +65,8 @@ export default function MapSection() {
                 style={{ left: loc.x, top: loc.y, transform: 'translate(-50%, -50%)' }}
               >
                 {/* Ping animation */}
-                <div className="absolute inset-0 w-6 h-6 -ml-1 -mt-1 rounded-full bg-gta-orange/30 animate-ping" />
-                <div className="relative z-10 w-4 h-4 rounded-full bg-gta-orange border-2 border-gta-black shadow-[0_0_10px_rgba(255,106,0,0.6)] cursor-pointer hover:shadow-[0_0_20px_rgba(255,106,0,0.8)] transition-shadow duration-300" />
+                <div className="absolute inset-0 w-6 h-6 -ml-1 -mt-1 rounded-full bg-gta-orange/30 animate-ping-slow" />
+                <div className="relative z-10 w-4 h-4 rounded-full bg-gta-orange border-2 border-gta-black shadow-[0_0_10px_rgba(255,106,0,0.6)] cursor-pointer hover:shadow-[0_0_20px_rgba(255,106,0,0.8)] hover:scale-125 transition-all duration-300" />
 
                 {/* Tooltip */}
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-48 p-3 glass-card rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200 z-20">

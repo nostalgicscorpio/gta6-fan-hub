@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import CinematicIntro, { hasSeenIntro } from './components/CinematicIntro';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import CountdownTimer from './components/CountdownTimer';
@@ -99,15 +100,26 @@ function ScrollToTopButton() {
 }
 
 function App() {
+  const [introComplete, setIntroComplete] = useState(hasSeenIntro());
   const [loaded, setLoaded] = useState(false);
 
   return (
     <div className="relative bg-gta-black min-h-screen overflow-x-hidden">
+      {/* Cinematic R★ intro — plays once per session */}
       <AnimatePresence mode="wait">
-        {!loaded && <LoadingScreen key="loader" onComplete={() => setLoaded(true)} />}
+        {!introComplete && (
+          <CinematicIntro key="intro" onComplete={() => setIntroComplete(true)} />
+        )}
       </AnimatePresence>
 
-      {loaded && (
+      {/* Loading screen — plays after intro completes */}
+      <AnimatePresence mode="wait">
+        {introComplete && !loaded && (
+          <LoadingScreen key="loader" onComplete={() => setLoaded(true)} />
+        )}
+      </AnimatePresence>
+
+      {introComplete && loaded && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

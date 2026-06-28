@@ -1,0 +1,356 @@
+@import "tailwindcss";
+
+/* ──────────────────────────────────────────────
+   GTA VI Fan Hub — Production Design System
+   ────────────────────────────────────────────── */
+
+@theme {
+  --color-gta-black: #0a0a0a;
+  --color-gta-darker: #050505;
+  --color-gta-dark: #111111;
+  --color-gta-card: #161616;
+  --color-gta-card-hover: #1c1c1c;
+  --color-gta-border: #1e1e1e;
+  --color-gta-muted: #888888;
+  --color-gta-text: #e0e0e0;
+  --color-gta-orange: #ff6a00;
+  --color-gta-orange-light: #ff8c33;
+  --color-gta-orange-dark: #cc5500;
+  --color-gta-neon: #ff4500;
+  --color-gta-pink: #ff2d78;
+  --color-gta-cyan: #00e5ff;
+  --color-gta-gold: #ffc107;
+  --color-gta-purple: #8b5cf6;
+  --font-display: "Orbitron", sans-serif;
+  --font-heading: "Bebas Neue", sans-serif;
+  --font-body: "Inter", sans-serif;
+}
+
+/* Global reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-gta-orange) var(--color-gta-black);
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-gta-black);
+  color: var(--color-gta-text);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-gta-black); }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, var(--color-gta-orange), var(--color-gta-orange-dark));
+  border-radius: 3px;
+}
+
+::selection {
+  background: var(--color-gta-orange);
+  color: #000;
+}
+
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/* ── Keyframes ─────────────────────────────── */
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes border-glow {
+  0%, 100% {
+    border-color: rgba(255, 106, 0, 0.2);
+    box-shadow: 0 0 8px rgba(255, 106, 0, 0.08);
+  }
+  50% {
+    border-color: rgba(255, 106, 0, 0.6);
+    box-shadow: 0 0 20px rgba(255, 106, 0, 0.2);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes ken-burns {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.08); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ping-slow {
+  0% { transform: scale(1); opacity: 0.8; }
+  75%, 100% { transform: scale(2.5); opacity: 0; }
+}
+
+@keyframes loading-bar {
+  0% { width: 0%; }
+  50% { width: 70%; }
+  100% { width: 100%; }
+}
+
+@keyframes glow-breathe {
+  0%, 100% { box-shadow: 0 0 10px rgba(255, 106, 0, 0.1), 0 0 30px rgba(255, 106, 0, 0.05); }
+  50% { box-shadow: 0 0 20px rgba(255, 106, 0, 0.25), 0 0 50px rgba(255, 106, 0, 0.1); }
+}
+
+/* ── Utility classes ───────────────────────── */
+.text-glow {
+  text-shadow: 0 0 20px rgba(255, 106, 0, 0.6),
+               0 0 40px rgba(255, 106, 0, 0.3),
+               0 0 80px rgba(255, 106, 0, 0.1);
+}
+
+.text-glow-sm {
+  text-shadow: 0 0 10px rgba(255, 106, 0, 0.4),
+               0 0 20px rgba(255, 106, 0, 0.2);
+}
+
+.box-glow {
+  box-shadow: 0 0 20px rgba(255, 106, 0, 0.3),
+              0 0 40px rgba(255, 106, 0, 0.1);
+}
+
+.box-glow-hover:hover {
+  box-shadow: 0 0 30px rgba(255, 106, 0, 0.4),
+              0 0 60px rgba(255, 106, 0, 0.15);
+}
+
+.animate-glow-pulse { animation: glow-pulse 3s ease-in-out infinite; }
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 4s ease-in-out infinite;
+}
+.animate-border-glow { animation: border-glow 3s ease-in-out infinite; }
+.animate-ken-burns { animation: ken-burns 20s ease-in-out alternate infinite; }
+.animate-ping-slow { animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite; }
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.03) 50%, transparent 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* ── Premium card hover glow ───────────────── */
+.card-hover-glow {
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.card-hover-glow:hover {
+  box-shadow:
+    0 0 20px rgba(255, 106, 0, 0.15),
+    0 0 40px rgba(255, 106, 0, 0.08),
+    0 8px 30px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 106, 0, 0.35);
+  transform: translateY(-2px);
+}
+
+/* ── Premium button glow ──────────────────── */
+.btn-glow {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.btn-glow::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255, 106, 0, 0.4), rgba(255, 193, 7, 0.2));
+  opacity: 0;
+  z-index: -1;
+  filter: blur(12px);
+  transition: opacity 0.4s ease;
+}
+
+.btn-glow:hover::after {
+  opacity: 1;
+}
+
+/* Glass card */
+.glass-card {
+  background: rgba(22, 22, 22, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 106, 0, 0.12);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  background: rgba(28, 28, 28, 0.8);
+  border-color: rgba(255, 106, 0, 0.3);
+}
+
+.glass-card-static {
+  background: rgba(22, 22, 22, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 106, 0, 0.12);
+}
+
+/* Noise overlay */
+.noise-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Grid pattern */
+.grid-pattern {
+  background-image:
+    linear-gradient(rgba(255, 106, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 106, 0, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Section divider */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(255, 106, 0, 0.3), transparent);
+}
+
+/* Image shimmer loading placeholder */
+.img-loading {
+  background: linear-gradient(90deg, #161616 25%, #1e1e1e 50%, #161616 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Lightbox */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox-overlay img {
+  max-width: 90vw;
+  max-height: 85vh;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 0 60px rgba(255, 106, 0, 0.2);
+}
+
+/* Loading screen */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #050505;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-bar-track {
+  width: 200px;
+  height: 2px;
+  background: rgba(255, 106, 0, 0.1);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.loading-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-gta-orange), var(--color-gta-gold));
+  border-radius: 1px;
+  animation: loading-bar 1.8s ease-in-out forwards;
+}
+
+/* Ad-ready spacing */
+.ad-slot {
+  min-height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed rgba(255, 106, 0, 0.1);
+  border-radius: 8px;
+  color: rgba(255, 106, 0, 0.15);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* ── Responsive polish ─────────────────────── */
+
+/* Fix for very small screens */
+@media (max-width: 360px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+/* Fix line-clamp utility */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Improve touch targets on mobile */
+@media (max-width: 640px) {
+  .glass-card {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Prevent horizontal overflow on small screens */
+  section {
+    max-width: 100vw;
+  }
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

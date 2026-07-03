@@ -6,6 +6,7 @@ import ScreenshotsSection from '../components/ScreenshotsSection';
 import GameplaySection from '../components/GameplaySection';
 import CharactersSection from '../components/CharactersSection';
 import MapSection from '../components/MapSection';
+import CreatorEcosystemSection from '../components/CreatorEcosystemSection';
 import SEO from '../components/SEO';
 
 export default function Home() {
@@ -31,6 +32,7 @@ export default function Home() {
  <ScreenshotsSection />
  <GameplaySection />
  <CharactersSection />
+ <CreatorEcosystemSection />
  <MapSection />
  </main>
  );

@@ -13,6 +13,9 @@ const NotFound = React.lazy(() => import('./pages/NotFound'));
 const TrailersHub = React.lazy(() => import('./pages/TrailersHub'));
 const NewsHub = React.lazy(() => import('./pages/NewsHub'));
 const GameplayHub = React.lazy(() => import('./pages/GameplayHub'));
+const CommunityHub = React.lazy(() => import('./pages/CommunityHub'));
+const YouTubeHub = React.lazy(() => import('./pages/YouTubeHub'));
+const InstagramHub = React.lazy(() => import('./pages/InstagramHub'));
 import ErrorBoundary from './components/ErrorBoundary';
 import Footer from './components/Footer';
 import AnalyticsDashboard from './components/AnalyticsDashboard';
@@ -177,6 +180,9 @@ function App() {
  <Route path="/characters/:slug" element={<CharacterPage />} />
  <Route path="/map" element={<InteractiveMap />} />
  <Route path="/media" element={<MediaGalleryPage />} />
+ <Route path="/community" element={<CommunityHub />} />
+ <Route path="/youtube" element={<YouTubeHub />} />
+ <Route path="/instagram" element={<InstagramHub />} />
  <Route path="*" element={<NotFound />} />
  </Routes>
  </AnimatePresence>

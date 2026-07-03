@@ -3,17 +3,19 @@ import { FaTwitter, FaYoutube, FaInstagram, FaDiscord } from 'react-icons/fa';
 import { trackButtonClick } from '../utils/analytics';
 import { revealVariants, staggerContainer } from '../utils/animations';
 
+import { SOCIAL_LINKS } from '../config/socials';
+
 const socialLinks = [
   { icon: FaTwitter, href: '#', label: 'Twitter' },
-  { icon: FaYoutube, href: '#', label: 'YouTube' },
-  { icon: FaInstagram, href: '#', label: 'Instagram' },
-  { icon: FaDiscord, href: '#', label: 'Discord' },
+  { icon: FaYoutube, href: SOCIAL_LINKS.YOUTUBE, label: 'YouTube' },
+  { icon: FaInstagram, href: SOCIAL_LINKS.INSTAGRAM, label: 'Instagram' },
+  { icon: FaDiscord, href: SOCIAL_LINKS.DISCORD, label: 'Discord' },
 ];
 
 const footerLinks = [
-  { title: 'Explore', items: ['Home', 'News', 'Trailers', 'Screenshots'] },
-  { title: 'Game', items: ['Characters', 'Map', 'Vehicles', 'Missions'] },
-  { title: 'Community', items: ['Forums', 'Fan Art', 'Discord', 'Reddit'] },
+  { title: 'Explore', items: [{name: 'Home', href: '/#home'}, {name: 'News', href: '/news'}, {name: 'Trailers', href: '/trailers'}, {name: 'Screenshots', href: '/media'}] },
+  { title: 'Creator', items: [{name: 'Community Hub', href: '/community'}, {name: 'YouTube', href: '/youtube'}, {name: 'Instagram', href: '/instagram'}, {name: 'Gameplay', href: '/gameplay'}] },
+  { title: 'Game', items: [{name: 'Characters', href: '/#characters'}, {name: 'Map', href: '/#map'}] },
 ];
 
 export default function Footer() {
@@ -72,13 +74,13 @@ export default function Footer() {
               </h4>
               <ul className="space-y-4">
                 {col.items.map((item) => (
-                  <li key={item}>
+                  <li key={item.name}>
                     <a
-                      href={`#${item.toLowerCase()}`}
-                      onClick={() => trackButtonClick(`Footer: ${item}`)}
+                      href={item.href}
+                      onClick={() => trackButtonClick(`Footer: ${item.name}`)}
                       className="text-sm font-medium text-[#8D8D97] hover:text-[#FF8A2A] transition-colors duration-300 focus-ring"
                     >
-                      {item}
+                      {item.name}
                     </a>
                   </li>
                 ))}

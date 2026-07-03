@@ -9,7 +9,7 @@ const navLinks = [
   { name: 'Trailers', href: '/trailers' },
   { name: 'Gallery', href: '/media' },
   { name: 'Characters', href: '/#characters' },
-  { name: 'Map', href: '/#map' },
+  { name: 'Community', href: '/community' },
 ];
 
 export default function Navbar({ onOpenSearch }) {

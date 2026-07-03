@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, memo } from 'react';
 import { motion } from 'framer-motion';
 import { trackButtonClick } from '../utils/analytics';
 
@@ -23,27 +23,28 @@ function CountdownUnit({ value, label, prevValue }) {
 
   return (
     <motion.div
-      className="flex flex-col items-center"
+      className="flex flex-col items-center flex-1"
       whileHover={{ scale: 1.05, y: -4 }}
       transition={{ type: 'spring', stiffness: 300 }}
     >
-      <div className="relative group">
-        <div className="glass-card-static rounded-xl px-3 py-3 sm:px-5 sm:py-4 md:px-7 md:py-5 animate-border-glow">
+      <div className="relative group w-full max-w-[120px] sm:max-w-[160px] lg:max-w-[200px]">
+        <div className="bg-[#1B1C22] border border-[rgba(255,255,255,0.08)] rounded-xl px-2 py-4 sm:px-6 sm:py-8 lg:px-8 lg:py-10 shadow-[0_8px_32px_rgba(0,0,0,0.45)] w-full flex justify-center items-center backdrop-blur-sm relative overflow-hidden">
+          {/* Subtle top glare */}
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#FF8A2A]/20 to-transparent" />
+          
           <motion.span
             key={value}
             initial={changed ? { rotateX: -30, opacity: 0.5, scale: 0.95 } : false}
             animate={{ rotateX: 0, opacity: 1, scale: 1 }}
             transition={{ duration: 0.35, ease: 'easeOut' }}
-            className="font-display font-black text-2xl sm:text-4xl md:text-6xl lg:text-7xl text-gta-orange text-glow tabular-nums inline-block"
+            className="font-display font-black text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-[#FFFFFF] tabular-nums inline-block drop-shadow-md"
             style={{ perspective: '300px' }}
           >
             {String(value).padStart(2, '0')}
           </motion.span>
         </div>
-        {/* Reflection glow */}
-        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-2/3 h-3 bg-gta-orange/15 blur-lg rounded-full" />
       </div>
-      <span className="mt-3 text-[10px] sm:text-xs font-medium tracking-[0.25em] uppercase text-gta-muted">
+      <span className="mt-4 sm:mt-6 text-[10px] sm:text-xs lg:text-base font-bold tracking-[0.25em] uppercase text-[#8D8D97] w-full text-center">
         {label}
       </span>
     </motion.div>
@@ -52,13 +53,13 @@ function CountdownUnit({ value, label, prevValue }) {
 
 function Separator() {
   return (
-    <div className="flex items-center text-gta-orange/30 font-display text-2xl sm:text-4xl md:text-6xl lg:text-7xl animate-glow-pulse select-none px-1">
+    <div className="flex items-center text-[#C9C9CF]/20 font-display text-4xl sm:text-6xl lg:text-8xl pb-8 sm:pb-12 select-none px-1 sm:px-4">
       :
     </div>
   );
 }
 
-export default function CountdownTimer() {
+const CountdownTimer = () => {
   const [copied, setCopied] = useState(false);
   const [time, setTime] = useState(getTimeLeft);
   const prevTimeRef = useRef(time);
@@ -71,11 +72,9 @@ export default function CountdownTimer() {
       });
     };
 
-    // Sync to the next whole second boundary for precision
     const msUntilNextSecond = 1000 - (Date.now() % 1000);
     const syncTimeout = setTimeout(() => {
       tick();
-      // After syncing, run at exact 1-second intervals
       intervalRef.current = setInterval(tick, 1000);
     }, msUntilNextSecond);
 
@@ -91,10 +90,11 @@ export default function CountdownTimer() {
 
   const handleShare = useCallback(() => {
     trackButtonClick('Share Countdown');
-    const msg = time.launched
-      ? '🎮 GTA VI is NOW AVAILABLE! gta6fanhub.com'
-      : `🎮 Only ${time.days} days until GTA VI launches on November 16, 2026! gta6fanhub.com`;
-    navigator.clipboard.writeText(msg).then(() => {
+    const shareUrl = import.meta.env.VITE_SITE_URL ? import.meta.env.VITE_SITE_URL.replace(/^https?:\/\//, '') : 'localhost:5173';
+    const text = time.launched
+      ? `🎮 GTA VI is NOW AVAILABLE! ${shareUrl}`
+      : `🎮 Only ${time.days} days until GTA VI launches on November 16, 2026! ${shareUrl}`;
+    navigator.clipboard.writeText(text).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }).catch(() => {
@@ -103,33 +103,27 @@ export default function CountdownTimer() {
   }, [time.days, time.launched]);
 
   return (
-    <section id="countdown" className="relative py-16 sm:py-24 lg:py-32">
-      <div className="section-divider" />
+    <section id="countdown" className="relative w-full bg-[#131316] py-16 sm:py-24 lg:py-32 overflow-hidden border-t border-[rgba(255,255,255,0.03)] border-b shadow-[0_-20px_50px_rgba(0,0,0,0.5)] z-20">
+      {/* Background Lighting */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[800px] h-full max-h-[400px] bg-[radial-gradient(ellipse_at_center,rgba(255,138,42,0.02)_0%,transparent_70%)] rounded-full blur-[100px] pointer-events-none" />
 
-      {/* Background accents */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gta-orange/[0.03] rounded-full blur-[150px]" />
-
-      <div className="max-w-5xl mx-auto text-center px-6 relative z-10">
+      <div className="page-container relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.6 }}
+          className="text-center mb-10 sm:mb-16"
         >
-          <p className="text-[11px] sm:text-xs tracking-[0.5em] uppercase text-gta-orange font-medium mb-3">
-            {time.launched ? '🎮 The wait is over' : 'Countdown to launch'}
-          </p>
-          <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl text-white mb-3">
+          <h2 className="font-display font-black text-2xl sm:text-3xl md:text-4xl lg:text-5xl tracking-widest text-[#FFFFFF] uppercase drop-shadow-md">
             {time.launched ? (
-              <span className="text-gta-orange text-glow animate-glow-pulse">
-                GTA VI IS NOW AVAILABLE
-              </span>
+              <span className="text-[#FF8A2A]">GTA VI IS NOW AVAILABLE</span>
             ) : (
-              <>NOVEMBER 16, <span className="text-gta-orange text-glow">2026</span></>
+              'GTA VI Release Countdown'
             )}
           </h2>
           {time.launched && (
-            <p className="text-gta-muted mb-8">Grand Theft Auto VI has launched. Welcome to Leonida.</p>
+            <p className="text-[#8D8D97] mt-4 text-sm sm:text-base">Grand Theft Auto VI has launched. Welcome to Leonida.</p>
           )}
         </motion.div>
 
@@ -139,15 +133,15 @@ export default function CountdownTimer() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-100px' }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="flex justify-center items-center gap-1 sm:gap-2 md:gap-4 mt-8 sm:mt-12"
+            className="flex justify-center items-center gap-1 sm:gap-2 lg:gap-4 w-full max-w-5xl mx-auto"
           >
             <CountdownUnit value={time.days} label="Days" prevValue={prev.days} />
             <Separator />
             <CountdownUnit value={time.hours} label="Hours" prevValue={prev.hours} />
             <Separator />
-            <CountdownUnit value={time.minutes} label="Min" prevValue={prev.minutes} />
+            <CountdownUnit value={time.minutes} label="Minutes" prevValue={prev.minutes} />
             <Separator />
-            <CountdownUnit value={time.seconds} label="Sec" prevValue={prev.seconds} />
+            <CountdownUnit value={time.seconds} label="Seconds" prevValue={prev.seconds} />
           </motion.div>
         )}
 
@@ -156,17 +150,13 @@ export default function CountdownTimer() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.6 }}
-          className="mt-10 sm:mt-14 flex flex-col items-center gap-4"
+          className="mt-12 sm:mt-16 flex flex-col items-center gap-6"
         >
-          <div className="flex gap-3 flex-wrap justify-center">
-            <span className="px-4 py-2 rounded-lg glass-card-static text-xs tracking-wider uppercase text-gta-muted font-medium">PlayStation 5</span>
-            <span className="px-4 py-2 rounded-lg glass-card-static text-xs tracking-wider uppercase text-gta-muted font-medium">Xbox Series X|S</span>
-          </div>
           <button
             onClick={handleShare}
-            className="mt-2 px-5 py-2.5 rounded-lg glass-card text-xs tracking-wider uppercase text-gta-orange font-bold hover:bg-gta-orange/20 hover:shadow-[0_0_20px_rgba(255,106,0,0.2)] transition-all duration-300 cursor-pointer flex items-center gap-2"
+            className="px-6 py-3 rounded-sm border border-[rgba(255,255,255,0.08)] bg-[#1B1C22]/80 backdrop-blur-md text-sm tracking-widest uppercase text-[#FFFFFF] font-bold hover:bg-[#1B1C22] hover:border-[#FF8A2A]/50 transition-all duration-300 cursor-pointer flex items-center gap-3 group"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-[#8D8D97] group-hover:text-[#FF8A2A] transition-colors" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
             </svg>
             {copied ? 'Copied!' : 'Share Countdown'}
@@ -175,4 +165,6 @@ export default function CountdownTimer() {
       </div>
     </section>
   );
-}
+};
+
+export default memo(CountdownTimer);

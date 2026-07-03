@@ -15,7 +15,7 @@
     <meta property="og:description" content="The ultimate unofficial fan destination for everything Grand Theft Auto VI. Latest news, trailers, screenshots, characters, and the interactive Leonida map." />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="/images/hero-bg.png" />
-    <meta property="og:url" content="https://gta6fanhub.com" />
+    <meta property="og:url" content="%VITE_SITE_URL%" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -26,7 +26,7 @@
     <title>GTA VI Fan Hub — Countdown, News, Trailers & More</title>
 
     <!-- Preload critical assets -->
-    <link rel="preload" as="image" href="/images/hero-bg.png" />
+    <link rel="preload" as="image" href="/images/trailers/hero-bg.jpg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet" />
@@ -37,11 +37,11 @@
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "GTA VI Fan Hub",
-      "url": "https://gta6fanhub.com",
+      "url": "%VITE_SITE_URL%",
       "description": "The ultimate unofficial fan destination for Grand Theft Auto VI.",
       "potentialAction": {
         "@type": "SearchAction",
-        "target": "https://gta6fanhub.com/?q={search_term_string}",
+        "target": "%VITE_SITE_URL%/?q={search_term_string}",
         "query-input": "required name=search_term_string"
       }
     }

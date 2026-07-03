@@ -3,22 +3,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { HiX, HiChevronLeft, HiChevronRight, HiDownload } from 'react-icons/hi';
 import { trackButtonClick } from '../utils/analytics';
 import { revealVariants, staggerContainer } from '../utils/animations';
+import AssetImage from './AssetImage';
 
-const screenshots = [
-  { id: 1, title: 'Vice City Sunset', src: '/images/ss-sunset.png', category: 'Scenery' },
-  { id: 2, title: 'Neon Nightlife', src: '/images/ss-nightlife.png', category: 'Night' },
-  { id: 3, title: 'Everglades Swamp', src: '/images/ss-swamp.png', category: 'Wilderness' },
-  { id: 4, title: 'Highway Chase', src: '/images/ss-chase.png', category: 'Action' },
-  { id: 5, title: 'Ocean Beach', src: '/images/ss-beach.png', category: 'Beach' },
-  { id: 6, title: 'Downtown Vice City', src: '/images/ss-downtown.png', category: 'City' },
-];
+import { screenshots } from '../data/screenshots';
 
 function Lightbox({ screenshot, screenshots, onClose, onNavigate }) {
   const currentIdx = screenshots.findIndex((s) => s.id === screenshot.id);
   const containerRef = useRef(null);
   const touchStartX = useRef(0);
 
-  // Auto-focus for keyboard navigation
   useEffect(() => {
     containerRef.current?.focus();
   }, [screenshot.id]);
@@ -50,7 +43,7 @@ function Lightbox({ screenshot, screenshots, onClose, onNavigate }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex items-center justify-center"
+      className="fixed inset-0 z-[100] bg-[rgba(10,10,12,0.98)] backdrop-blur-2xl flex items-center justify-center"
       onClick={onClose}
       onKeyDown={handleKeyDown}
       onTouchStart={handleTouchStart}
@@ -59,62 +52,57 @@ function Lightbox({ screenshot, screenshots, onClose, onNavigate }) {
       role="dialog"
       aria-label="Screenshot viewer"
     >
-      {/* Close */}
       <button
         onClick={onClose}
-        className="absolute top-6 right-6 z-10 text-white/60 hover:text-gta-orange transition-colors cursor-pointer"
+        className="absolute top-6 right-6 z-10 text-[#8D8D97] hover:text-[#FF8A2A] transition-colors cursor-pointer focus-ring rounded-md p-1"
         aria-label="Close"
       >
-        <HiX size={28} />
+        <HiX size={32} />
       </button>
 
-      {/* Image counter badge */}
-      <div className="absolute top-6 left-1/2 -translate-x-1/2 z-10 px-4 py-1.5 rounded-full glass-card-static text-xs tracking-wider text-gta-muted font-medium">
-        {currentIdx + 1} of {screenshots.length}
+      <div className="absolute top-8 left-1/2 -translate-x-1/2 z-10 px-4 py-2 rounded-sm border border-[rgba(255,255,255,0.08)] bg-[rgba(10,10,12,0.8)] backdrop-blur-md text-xs tracking-widest text-[#8D8D97] font-bold uppercase">
+        {currentIdx + 1} <span className="opacity-50 px-1">/</span> {screenshots.length}
       </div>
 
-      {/* Navigation */}
       {currentIdx > 0 && (
         <button
           onClick={(e) => { e.stopPropagation(); onNavigate(currentIdx - 1); }}
-          className="absolute left-4 sm:left-8 z-10 w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/60 hover:text-gta-orange hover:border-gta-orange/40 transition-all cursor-pointer"
+          className="absolute left-4 sm:left-8 z-10 w-14 h-14 rounded-full bg-white/5 border border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[#8D8D97] hover:text-[#FF8A2A] hover:border-[#FF8A2A]/50 transition-all cursor-pointer focus-ring"
           aria-label="Previous screenshot"
         >
-          <HiChevronLeft size={24} />
+          <HiChevronLeft size={28} />
         </button>
       )}
       {currentIdx < screenshots.length - 1 && (
         <button
           onClick={(e) => { e.stopPropagation(); onNavigate(currentIdx + 1); }}
-          className="absolute right-4 sm:right-8 z-10 w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/60 hover:text-gta-orange hover:border-gta-orange/40 transition-all cursor-pointer"
+          className="absolute right-4 sm:right-8 z-10 w-14 h-14 rounded-full bg-white/5 border border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[#8D8D97] hover:text-[#FF8A2A] hover:border-[#FF8A2A]/50 transition-all cursor-pointer focus-ring"
           aria-label="Next screenshot"
         >
-          <HiChevronRight size={24} />
+          <HiChevronRight size={28} />
         </button>
       )}
 
-      {/* Image */}
       <motion.div
         key={screenshot.id}
-        initial={{ opacity: 0, scale: 0.95 }}
+        initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.95 }}
+        exit={{ opacity: 0, scale: 0.98 }}
         transition={{ duration: 0.3 }}
         className="max-w-[90vw] max-h-[85vh] relative"
         onClick={(e) => e.stopPropagation()}
       >
-        <img
+        <AssetImage
           src={screenshot.src}
           alt={screenshot.title}
-          className="max-w-full max-h-[80vh] object-contain rounded-xl shadow-[0_0_60px_rgba(255,106,0,0.15)]"
+          className="max-w-full max-h-[80vh] object-contain rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-[rgba(255,255,255,0.05)]"
         />
-        {/* Caption */}
-        <div className="mt-4 flex items-center justify-between">
+        <div className="mt-6 flex items-center justify-between">
           <div>
-            <h3 className="font-display font-bold text-white text-sm sm:text-base">{screenshot.title}</h3>
-            <p className="text-xs text-gta-muted mt-0.5">{screenshot.category} · {currentIdx + 1} of {screenshots.length}</p>
+            <h3 className="font-display font-bold text-[#FFFFFF] text-lg sm:text-xl tracking-wide">{screenshot.title}</h3>
+            <p className="text-xs text-[#FF8A2A] uppercase tracking-widest font-bold mt-1.5">{screenshot.category}</p>
           </div>
-          <button className="flex items-center gap-1.5 text-xs text-gta-orange hover:text-gta-orange-light transition-colors cursor-pointer">
+          <button className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#8D8D97] hover:text-[#FF5FAF] transition-colors cursor-pointer focus-ring rounded p-2 border border-[rgba(255,255,255,0.08)] bg-[#1B1C22]">
             <HiDownload className="w-4 h-4" />
             Download
           </button>
@@ -137,37 +125,39 @@ export default function ScreenshotsSection() {
   };
 
   return (
-    <section id="screenshots" className="relative py-20 sm:py-28">
+    <section id="screenshots" className="relative py-12 sm:py-16 md:py-20 lg:py-28 bg-[#0B0B0D]">
       <div className="section-divider" />
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+      <div className="page-container">
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-80px' }}
           variants={staggerContainer}
-          className="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-12 sm:mb-16"
+          className="flex flex-col items-center justify-center text-center mb-16 sm:mb-24"
         >
-          <motion.div variants={revealVariants}>
-            <p className="text-[11px] tracking-[0.5em] uppercase text-gta-orange font-medium mb-2">
+          <motion.div variants={revealVariants} className="flex flex-col items-center">
+            <p className="text-[11px] sm:text-[12px] tracking-[0.4em] uppercase text-[#FF8A2A] font-bold mb-3">
               Gallery
             </p>
-            <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl text-white">
-              SCREEN<span className="text-gta-orange">SHOTS</span>
+            <h2 className="font-display font-black text-4xl sm:text-5xl md:text-6xl text-[#FFFFFF] tracking-wide uppercase text-center mb-6">
+              SCREENSHOTS
             </h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-transparent via-[#FF8A2A] to-transparent opacity-80" />
           </motion.div>
 
           {/* Filter tabs */}
-          <motion.div variants={revealVariants} className="flex gap-2 mt-4 sm:mt-0 flex-wrap">
+          <motion.div variants={revealVariants} className="flex gap-4 mt-10 flex-wrap justify-center">
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => handleFilterClick(cat)}
-                className={`px-3 py-1.5 text-[10px] tracking-wider uppercase font-bold rounded-lg transition-all duration-200 cursor-pointer ${
+                className={`px-6 py-3 text-[11px] tracking-[0.2em] uppercase font-bold rounded-sm border transition-all duration-300 cursor-pointer focus-ring ${
                   filter === cat
-                    ? 'bg-gta-orange text-black shadow-[0_0_15px_rgba(255,106,0,0.3)]'
-                    : 'bg-white/5 text-gta-muted hover:text-gta-orange hover:bg-white/10 hover:shadow-[0_0_10px_rgba(255,106,0,0.1)]'
+                    ? 'bg-[rgba(255,138,42,0.1)] border-[#FF8A2A] text-[#FF8A2A] shadow-[0_0_15px_rgba(255,138,42,0.15)]'
+                    : 'bg-transparent border-[rgba(255,255,255,0.08)] text-[#8D8D97] hover:border-[#FF5FAF] hover:text-[#FF5FAF]'
                 }`}
+                aria-pressed={filter === cat}
               >
                 {cat}
               </button>
@@ -176,47 +166,51 @@ export default function ScreenshotsSection() {
         </motion.div>
 
         {/* Grid */}
-        <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+        <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           <AnimatePresence mode="popLayout">
             {filtered.map((shot, i) => (
               <motion.div
                 key={shot.id}
                 layout
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.4, delay: i * 0.05 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.4, delay: Math.min(i * 0.05, 0.3) }}
                 whileHover={{ y: -6 }}
                 onClick={() => {
                   trackButtonClick(`Screenshot: ${shot.title}`);
                   setLightboxIdx(screenshots.findIndex((s) => s.id === shot.id));
                 }}
-                className={`group relative rounded-xl overflow-hidden cursor-pointer shadow-lg shadow-black/30 card-hover-glow ${
+                className={`group bg-[#1B1C22] border border-[rgba(255,255,255,0.08)] rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.45)] hover:border-[rgba(255,138,42,0.25)] transition-all duration-300 overflow-hidden cursor-pointer flex flex-col ${
                   i === 0 && filter === 'All' ? 'sm:col-span-2 sm:row-span-2' : ''
                 }`}
               >
-                <div className={`relative overflow-hidden ${i === 0 && filter === 'All' ? 'aspect-[16/11]' : 'aspect-video'}`}>
-                  <img
+                <div className={`relative overflow-hidden shrink-0 ${i === 0 && filter === 'All' ? 'aspect-video sm:aspect-auto sm:h-[400px] lg:h-[500px]' : 'aspect-video'}`}>
+                  <AssetImage
                     src={shot.src}
                     alt={shot.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     loading="lazy"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                   />
-                  {/* Hover overlay */}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300" />
+                  {/* Hover overlay for icon */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300" />
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center">
-                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-14 h-14 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center">
+                      <svg className="w-6 h-6 text-[#FFFFFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
                       </svg>
                     </div>
                   </div>
+                </div>
 
-                  {/* Caption */}
-                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                    <p className="text-white font-display font-bold text-sm">{shot.title}</p>
-                    <p className="text-gta-orange text-[10px] tracking-wider uppercase mt-0.5">{shot.category}</p>
-                  </div>
+                {/* Clean caption area below image */}
+                <div className="p-5 sm:p-6 bg-[#131316] flex flex-col grow justify-center border-t border-[rgba(255,255,255,0.03)]">
+                  <h3 className="text-[#FFFFFF] font-display font-bold text-base sm:text-lg tracking-wide group-hover:text-[#FF8A2A] transition-colors">
+                    {shot.title}
+                  </h3>
+                  <p className="text-[#8D8D97] text-[10px] sm:text-xs tracking-[0.2em] uppercase font-bold mt-2">
+                    {shot.category}
+                  </p>
                 </div>
               </motion.div>
             ))}

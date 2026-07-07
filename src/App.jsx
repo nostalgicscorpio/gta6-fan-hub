@@ -200,7 +200,7 @@ function App() {
  <Route path="/news/:slug" element={<ArticlePage />} />
  <Route path="/gameplay" element={<GameplayHub />} />
  <Route path="/trailers" element={<TrailersHub />} />
- <Route path="/trailers/:slug" element={<TrailerPage />} />
+ <Route path="/trailers/:id" element={<TrailerPage />} />
  <Route path="/characters/:slug" element={<CharacterPage />} />
  <Route path="/map" element={<InteractiveMap />} />
  <Route path="/media" element={<MediaGalleryPage />} />

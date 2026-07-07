@@ -18,13 +18,18 @@ export const trailerService = {
         title: item.title || 'Untitled',
         subtitle: item.subtitle || '',
         youtubeId: item.youtubeId || item.video_id || '',
+        videoUrl: item.videoUrl || item.video_url || '',
         thumbnail: item.thumbnail || null,
         description: item.description || '',
-        releaseDate: item.releaseDate || item.date || new Date(item.created_at || Date.now()).toLocaleDateString(),
+        date: item.date || item.releaseDate || new Date(item.created_at || Date.now()).toLocaleDateString(),
         duration: item.duration || '0:00',
         views: item.views || '0',
         likes: item.likes || '0',
         comments: item.comments || '0',
+        platform: item.platform || 'PlayStation 5, Xbox Series X|S',
+        tag: item.tag || '',
+        gallery: item.gallery || [],
+        relatedTrailers: item.relatedTrailers || item.related_trailers || [],
         breakdownInfo: item.breakdownInfo || { highlights: [], keyDetails: [] }
       }));
       
@@ -40,5 +45,10 @@ export const trailerService = {
   async getTrailerBySlug(slug) {
     const all = await this.getTrailers();
     return all.find(t => t.slug === slug);
+  },
+
+  async getTrailerById(id) {
+    const all = await this.getTrailers();
+    return all.find(t => String(t.id) === id || t.slug === id);
   }
 };

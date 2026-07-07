@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { HiArrowLeft, HiCalendar, HiClock, HiEye, HiDesktopComputer, HiTag } from 'react-icons/hi';
@@ -8,7 +8,7 @@ import AssetImage from '../components/AssetImage';
 import NavOffset from '../components/NavOffset';
 
 export default function TrailerPage() {
- const { slug } = useParams();
+ const { id } = useParams();
  const navigate = useNavigate();
  
  const [trailer, setTrailer] = useState(null);
@@ -20,16 +20,18 @@ export default function TrailerPage() {
  let isMounted = true;
  setIsLoading(true);
 
- trailerService.getTrailers().then(data => {
+ Promise.all([
+   trailerService.getTrailers(),
+   trailerService.getTrailerById(id)
+ ]).then(([data, currentTrailer]) => {
    if (!isMounted) return;
    setAllTrailers(data);
-   const currentTrailer = data.find(item => item.slug === slug);
    setTrailer(currentTrailer || null);
    setIsLoading(false);
  });
 
  return () => { isMounted = false; };
- }, [slug]);
+ }, [id]);
 
  if (isLoading) {
   return (
@@ -39,9 +41,12 @@ export default function TrailerPage() {
   );
  }
 
- const trailerIndex = allTrailers.findIndex(item => item.slug === slug);
- const prevTrailer = trailerIndex > 0 ? allTrailers[trailerIndex - 1] : null;
- const nextTrailer = trailerIndex !== -1 && trailerIndex < allTrailers.length - 1 ? allTrailers[trailerIndex + 1] : null;
+ console.log("Trailer loaded:", trailer);
+
+ const safeAllTrailers = allTrailers || [];
+ const trailerIndex = safeAllTrailers.findIndex(item => String(item.id) === id || item.slug === id);
+ const prevTrailer = trailerIndex > 0 ? safeAllTrailers[trailerIndex - 1] : null;
+ const nextTrailer = trailerIndex !== -1 && trailerIndex < safeAllTrailers.length - 1 ? safeAllTrailers[trailerIndex + 1] : null;
 
  if (!trailer) {
  return (
@@ -54,8 +59,8 @@ export default function TrailerPage() {
  );
  }
 
- const relatedTrailers = trailer.relatedTrailers
- ? allTrailers.filter(item => trailer.relatedTrailers.includes(item.slug))
+ const relatedTrailers = Array.isArray(trailer?.relatedTrailers)
+ ? safeAllTrailers.filter(item => trailer.relatedTrailers.includes(item.slug))
  : [];
 
  return (
@@ -67,25 +72,25 @@ export default function TrailerPage() {
  className="pb-24 bg-gta-black"
  >
  <SEO 
- title={`${trailer.title} - Official Video`} 
- description={trailer.description} 
- image={trailer.thumbnail} 
+ title={`${trailer?.title || 'Loading'} - Official Video`} 
+ description={trailer?.description || ''} 
+ image={trailer?.thumbnail || ''} 
  schema={{
  "@context": "https://schema.org",
  "@type": "VideoObject",
- "name": trailer.title,
- "description": trailer.description,
- "thumbnailUrl": [trailer.thumbnail],
- "uploadDate": trailer.date,
- "embedUrl": trailer.videoUrl
+ "name": trailer?.title || '',
+ "description": trailer?.description || '',
+ "thumbnailUrl": [trailer?.thumbnail || ''],
+ "uploadDate": trailer?.releaseDate || trailer?.date || '',
+ "embedUrl": trailer?.videoUrl || ''
  }}
  />
 
  {/* Cinematic Hero Background */}
  <div className="absolute top-0 left-0 right-0 h-[60vh] overflow-hidden opacity-30 pointer-events-none">
  <AssetImage
- src={trailer.thumbnail}
- alt={trailer.title}
+ src={trailer?.thumbnail}
+ alt={trailer?.title}
  className="w-full h-full object-cover object-center blur-sm scale-110"
  />
  <div className="absolute inset-0 bg-gradient-to-t from-gta-black to-transparent" />
@@ -109,8 +114,8 @@ export default function TrailerPage() {
  <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/60 to-transparent pointer-events-none z-10" />
  
  <iframe
- src={`https://www.youtube.com/embed/${trailer.youtubeId}?autoplay=0&rel=0&modestbranding=1&color=white`}
- title={trailer.title}
+ src={`https://www.youtube.com/embed/${trailer?.youtubeId}?autoplay=0&rel=0&modestbranding=1&color=white`}
+ title={trailer?.title}
  className="w-full h-full relative z-0"
  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
  allowFullScreen
@@ -122,32 +127,34 @@ export default function TrailerPage() {
  {/* Main Content */}
  <div className="lg:w-2/3">
  <div className="flex gap-4 mb-6">
+ {trailer?.subtitle && (
  <span className="text-[12px] tracking-[0.5em] uppercase font-bold text-black bg-primary px-4 py-1.5 rounded-sm shadow-[0_0_30px_rgba(255,106,0,0.3)] inline-block">
- {trailer.subtitle}
+ {trailer?.subtitle}
  </span>
- {trailer.tag && (
+ )}
+ {trailer?.tag && (
  <span className="flex items-center gap-1.5 text-[12px] tracking-wider uppercase font-bold text-white/70 border border-white/10 px-4 py-1.5 rounded-sm">
  <HiTag className="w-3 h-3" />
- {trailer.tag}
+ {trailer?.tag}
  </span>
  )}
  </div>
  <h1 className="font-display font-black text-5xl sm:text-6xl lg:text-7xl text-white mb-8 drop-shadow-2xl uppercase tracking-tight leading-[0.9]">
- {trailer.title}
+ {trailer?.title}
  </h1>
  
  <p className="text-xl sm:text-2xl text-white/80 leading-loose font-light mb-16 tracking-wide drop-shadow-md">
- {trailer.description}
+ {trailer?.description}
  </p>
 
  {/* Gallery */}
- {trailer.gallery && trailer.gallery.length > 0 && (
+ {trailer?.gallery && Array.isArray(trailer.gallery) && trailer.gallery.length > 0 && (
  <div className="mb-12">
  <h3 className="text-sm font-display font-bold uppercase tracking-widest text-primary mb-6">Gallery</h3>
  <div className="grid grid-cols-2 gap-4">
- {trailer.gallery.map((img, idx) => (
+ {(trailer.gallery || []).map((img, idx) => (
  <div key={idx} className="aspect-[16/9] rounded-xl overflow-hidden shadow-lg">
- <AssetImage src={img} alt={`${trailer.title} screenshot ${idx + 1}`} loading="lazy" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+ <AssetImage src={img} alt={`${trailer?.title} screenshot ${idx + 1}`} loading="lazy" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
  </div>
  ))}
  </div>
@@ -168,7 +175,7 @@ export default function TrailerPage() {
  <HiCalendar className="w-5 h-5 opacity-80" />
  <span className="text-[11px] uppercase tracking-[0.2em] font-bold opacity-90">Release Date</span>
  </div>
- <p className="text-white text-xl font-medium pl-8">{trailer.date}</p>
+ <p className="text-white text-xl font-medium pl-8">{trailer?.releaseDate || trailer?.date}</p>
  </div>
 
  <div>
@@ -176,7 +183,7 @@ export default function TrailerPage() {
  <HiClock className="w-5 h-5 opacity-80" />
  <span className="text-[11px] uppercase tracking-[0.2em] font-bold opacity-90">Duration</span>
  </div>
- <p className="text-white text-xl font-medium pl-8">{trailer.duration}</p>
+ <p className="text-white text-xl font-medium pl-8">{trailer?.duration}</p>
  </div>
 
  <div>
@@ -184,7 +191,7 @@ export default function TrailerPage() {
  <HiEye className="w-5 h-5 opacity-80" />
  <span className="text-[11px] uppercase tracking-[0.2em] font-bold opacity-90">Views</span>
  </div>
- <p className="text-white text-xl font-medium pl-8">{trailer.views}</p>
+ <p className="text-white text-xl font-medium pl-8">{trailer?.views}</p>
  </div>
 
  <div>
@@ -192,7 +199,7 @@ export default function TrailerPage() {
  <HiDesktopComputer className="w-5 h-5 opacity-80" />
  <span className="text-[11px] uppercase tracking-[0.2em] font-bold opacity-90">Platform</span>
  </div>
- <p className="text-white text-lg font-medium pl-8 leading-snug">{trailer.platform}</p>
+ <p className="text-white text-lg font-medium pl-8 leading-snug">{trailer?.platform}</p>
  </div>
  </div>
  </div>
@@ -231,23 +238,23 @@ export default function TrailerPage() {
  </div>
 
  {/* Related Trailers */}
- {relatedTrailers.length > 0 && (
+ {relatedTrailers && relatedTrailers.length > 0 && (
  <div className="mt-20">
  <h3 className="font-display font-black text-3xl text-white mb-8 border-b border-white/10 pb-4">
  More <span className="text-primary">Trailers</span>
  </h3>
  
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
- {relatedTrailers.map((related) => (
+ {(relatedTrailers || []).map((related) => (
  <div 
- key={related.id}
- onClick={() => navigate(`/trailers/${related.slug}`)}
+ key={related?.id || Math.random()}
+ onClick={() => navigate(`/trailers/${related?.slug}`)}
  className="group cursor-pointer glass-card card-hover-glow flex flex-col h-full border border-white/5"
  >
  <div className="relative aspect-video overflow-hidden">
  <AssetImage 
- src={related.thumbnail} 
- alt={related.title}
+ src={related?.thumbnail} 
+ alt={related?.title}
  loading="lazy"
  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
  />
@@ -255,10 +262,10 @@ export default function TrailerPage() {
  </div>
  <div className="card-content">
  <p className="text-[10px] tracking-widest uppercase font-bold text-primary mb-2">
- {related.subtitle}
+ {related?.subtitle}
  </p>
  <h4 className="font-display font-bold text-white text-xl group-hover:text-primary transition-colors line-clamp-1">
- {related.title}
+ {related?.title}
  </h4>
  </div>
  </div>

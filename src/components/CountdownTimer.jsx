@@ -59,7 +59,7 @@ function Separator() {
   );
 }
 
-const CountdownTimer = () => {
+const CountdownTimer = ({ integrated = false }) => {
   const [copied, setCopied] = useState(false);
   const [time, setTime] = useState(getTimeLeft);
   const prevTimeRef = useRef(time);
@@ -103,11 +103,11 @@ const CountdownTimer = () => {
   }, [time.days, time.launched]);
 
   return (
-    <section id="countdown" className="relative w-full bg-[#131316] py-16 sm:py-24 lg:py-32 overflow-hidden border-t border-[rgba(255,255,255,0.03)] border-b shadow-[0_-20px_50px_rgba(0,0,0,0.5)] z-20">
+    <section id={integrated ? undefined : "countdown"} className={`relative w-full overflow-hidden ${integrated ? 'py-4' : 'bg-[#131316] py-16 sm:py-24 lg:py-32 border-t border-[rgba(255,255,255,0.03)] border-b shadow-[0_-20px_50px_rgba(0,0,0,0.5)] z-20'}`}>
       {/* Background Lighting */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[800px] h-full max-h-[400px] bg-[radial-gradient(ellipse_at_center,rgba(255,138,42,0.02)_0%,transparent_70%)] rounded-full blur-[100px] pointer-events-none" />
+      {!integrated && <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[800px] h-full max-h-[400px] bg-[radial-gradient(ellipse_at_center,rgba(255,138,42,0.02)_0%,transparent_70%)] rounded-full blur-[100px] pointer-events-none" />}
 
-      <div className="page-container relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6">
+      <div className={`page-container relative z-10 w-full mx-auto px-4 sm:px-6 ${integrated ? '' : 'max-w-6xl'}`}>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -130,10 +130,9 @@ const CountdownTimer = () => {
         {!time.launched && (
           <motion.div
             initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-100px' }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="flex justify-center items-center gap-1 sm:gap-2 lg:gap-4 w-full max-w-5xl mx-auto"
+            className={`flex justify-center items-center gap-1 sm:gap-2 lg:gap-4 w-full mx-auto ${integrated ? 'max-w-4xl' : 'max-w-5xl'}`}
           >
             <CountdownUnit value={time.days} label="Days" prevValue={prev.days} />
             <Separator />
@@ -154,7 +153,7 @@ const CountdownTimer = () => {
         >
           <button
             onClick={handleShare}
-            className="px-6 py-3 rounded-sm border border-[rgba(255,255,255,0.08)] bg-[#1B1C22]/80 backdrop-blur-md text-sm tracking-widest uppercase text-[#FFFFFF] font-bold hover:bg-[#1B1C22] hover:border-[#FF8A2A]/50 transition-all duration-300 cursor-pointer flex items-center gap-3 group"
+            className={`px-6 py-3 rounded-sm border border-[rgba(255,255,255,0.08)] backdrop-blur-md text-sm tracking-widest uppercase text-[#FFFFFF] font-bold transition-all duration-300 cursor-pointer flex items-center gap-3 group ${integrated ? 'bg-white/5 hover:bg-white/10' : 'bg-[#1B1C22]/80 hover:bg-[#1B1C22] hover:border-[#FF8A2A]/50'}`}
           >
             <svg className="w-4 h-4 text-[#8D8D97] group-hover:text-[#FF8A2A] transition-colors" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />

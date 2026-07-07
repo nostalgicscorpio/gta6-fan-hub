@@ -6,9 +6,10 @@ import { useNavigate, useLocation } from 'react-router-dom';
 const navLinks = [
   { name: 'Home', href: '/#home' },
   { name: 'News', href: '/news' },
-  { name: 'Trailers', href: '/trailers' },
-  { name: 'Gallery', href: '/media' },
+  { name: 'Videos', href: '/youtube' },
+  { name: 'AI', href: '/instagram' },
   { name: 'Characters', href: '/#characters' },
+  { name: 'Map', href: '/map' },
   { name: 'Community', href: '/community' },
 ];
 
@@ -89,7 +90,7 @@ export default function Navbar({ onOpenSearch }) {
       transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled || mobileOpen
-          ? 'bg-[rgba(10,10,12,0.85)] backdrop-blur-md border-b border-[rgba(255,255,255,0.08)]'
+          ? 'bg-[rgba(11,11,13,0.7)] backdrop-blur-xl border-b border-white/5 shadow-2xl'
           : 'bg-transparent border-b border-transparent'
       }`}
     >

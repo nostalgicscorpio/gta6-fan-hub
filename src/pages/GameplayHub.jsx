@@ -4,15 +4,21 @@ import { HiSearch, HiCalendar } from 'react-icons/hi';
 import SEO from '../components/SEO';
 import NavOffset from '../components/NavOffset';
 import YouTubeEmbed from '../components/YouTubeEmbed';
-import { gameplayClips } from '../data/gameplay';
+import { gameplayService } from '../services/gameplayService';
 
 export default function GameplayHub() {
   const [activeTab, setActiveTab] = useState('GTA VI');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('ALL');
+  const [gameplayClips, setGameplayClips] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
+    gameplayService.getGameplayClips().then(data => {
+      setGameplayClips(data);
+      setIsLoading(false);
+    });
   }, []);
 
   const gameData = useMemo(() => gameplayClips.filter(c => c.game === activeTab), [activeTab]);
@@ -131,7 +137,19 @@ export default function GameplayHub() {
             transition={{ duration: 0.3 }}
             className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"
           >
-            {filteredClips.length > 0 ? (
+            {isLoading ? (
+              [...Array(6)].map((_, i) => (
+                <div key={i} className="flex flex-col bg-[#1B1C22] border border-white/5 rounded-2xl overflow-hidden shadow-xl animate-pulse">
+                  <div className="w-full aspect-video bg-white/5"></div>
+                  <div className="p-6 sm:p-8 flex flex-col flex-grow">
+                    <div className="h-3 w-1/3 bg-white/10 rounded mb-4"></div>
+                    <div className="h-6 w-3/4 bg-white/10 rounded mb-3"></div>
+                    <div className="h-4 w-full bg-white/10 rounded mb-2"></div>
+                    <div className="h-4 w-5/6 bg-white/10 rounded"></div>
+                  </div>
+                </div>
+              ))
+            ) : filteredClips.length > 0 ? (
               filteredClips.map((clip) => (
                 <div key={clip.id} className="flex flex-col bg-[#1B1C22] border border-white/5 rounded-2xl overflow-hidden shadow-xl">
                   <div className="w-full">

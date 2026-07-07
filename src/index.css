@@ -206,6 +206,25 @@ body {
   border-radius: 3px;
 }
 
+/* Fix Section Spacing */
+main > section:not(#home) {
+  margin-bottom: 100px;
+  clear: both;
+}
+
+.legacy-title-row {
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ gap:24px;
+ flex-wrap:wrap;
+}
+
+.transition-arrow {
+ position:static;
+ font-size:40px;
+}
+
 ::selection {
   background: var(--color-primary);
   color: #000;
@@ -321,16 +340,16 @@ img {
 
 /* ── Premium card hover glow ───────────────── */
 .card-hover-glow {
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .card-hover-glow:hover {
   box-shadow:
-    0 0 20px rgba(255, 45, 120, 0.15),
-    0 0 40px rgba(255, 45, 120, 0.1),
-    0 8px 30px rgba(0, 0, 0, 0.6);
-  border-color: rgba(255, 45, 120, 0.4);
-  transform: translateY(-4px) scale(1.02);
+    0 0 20px rgba(255, 45, 120, 0.2),
+    0 10px 40px rgba(0, 0, 0, 0.8);
+  border-color: rgba(255, 45, 120, 0.5);
+  transform: translateY(-8px) scale(1.02);
+  z-index: 10;
 }
 
 /* ── Premium button glow ──────────────────── */
@@ -355,18 +374,20 @@ img {
   opacity: 1;
 }
 
-/* Glass card (updated to solid premium card for reference match) */
+/* Premium Glass Card */
 .glass-card {
   border-radius: var(--card-radius) !important;
-  background: var(--color-gta-card);
-  border: 1px solid var(--color-gta-border);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  background: rgba(22, 22, 22, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-card:hover {
-  background: var(--color-gta-card-hover);
-  border-color: rgba(255, 45, 120, 0.3);
+  background: rgba(28, 28, 28, 0.8);
+  border-color: rgba(255, 45, 120, 0.4);
 }
 
 .glass-card-static {

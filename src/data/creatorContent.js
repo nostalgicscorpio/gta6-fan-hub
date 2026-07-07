@@ -3,7 +3,7 @@ export const creatorContent = {
     {
       id: 'yt-1',
       youtubeId: 'QdBZY2fkU-0', // Trailer 1
-      title: 'GTA 6 Trailer 1 Reaction & Breakdown',
+      title: 'GTA VI Trailer 1 Breakdown',
       type: 'reaction',
       category: 'GTA VI',
       date: '2023-12-05',
@@ -12,10 +12,10 @@ export const creatorContent = {
     },
     {
       id: 'yt-2',
-      youtubeId: 'Wz7m_B2O4-E', // Placeholder generic
-      title: 'GTA V Legacy - Best Moments',
+      youtubeId: 'QdBZY2fkU-0', // Use Trailer 1 for fallback testing
+      title: 'GTA VI Secrets Revealed',
       type: 'gameplay',
-      category: 'GTA V',
+      category: 'GTA VI',
       date: '2024-02-15',
       views: '450K',
       featured: false
@@ -24,7 +24,7 @@ export const creatorContent = {
   shorts: [
     {
       id: 'sh-1',
-      youtubeId: 'some-short-id',
+      youtubeId: 'QdBZY2fkU-0', // Use Trailer 1 as fallback for shorts too
       title: 'Lucia Escapes Police in Vice City!',
       date: '2024-03-01'
     }

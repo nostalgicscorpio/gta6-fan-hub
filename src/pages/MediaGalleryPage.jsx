@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
 import { HiX, HiChevronLeft, HiChevronRight, HiDownload, HiCalendar, HiLocationMarker, HiTag, HiVideoCamera, HiUsers } from 'react-icons/hi';
-import { mediaItems, categories } from '../data/mediaGallery';
+import { categories } from '../data/mediaGallery';
+import { galleryService } from '../services/galleryService';
 import SEO from '../components/SEO';
 import AssetImage from '../components/AssetImage';
 import NavOffset from '../components/NavOffset';
@@ -182,6 +183,16 @@ function MediaLightbox({ item, allItems, onClose, onNavigate }) {
 export default function MediaGalleryPage() {
  const [searchParams, setSearchParams] = useSearchParams();
  const [activeCategory, setActiveCategory] = useState('All');
+ const [mediaItems, setMediaItems] = useState([]);
+ const [isLoading, setIsLoading] = useState(true);
+
+ useEffect(() => {
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  galleryService.getGallery().then(data => {
+    setMediaItems(data);
+    setIsLoading(false);
+  });
+ }, []);
 
  // Filter logic
  const displayedMedia = activeCategory === 'All' 
@@ -204,10 +215,7 @@ export default function MediaGalleryPage() {
  setSearchParams({ item: id });
  };
 
- // Scroll to top on mount
- useEffect(() => {
- window.scrollTo({ top: 0, behavior: 'instant' });
- }, []);
+ // Scroll to top is handled in the main useEffect
 
  return (
  <div className="min-h-screen bg-gta-black pb-24 overflow-x-hidden font-sans flex flex-col">
@@ -252,6 +260,15 @@ export default function MediaGalleryPage() {
  </div>
 
  {/* Masonry Grid */}
+ {isLoading ? (
+ <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
+ {[...Array(8)].map((_, i) => (
+ <div key={i} className="break-inside-avoid glass-card border border-white/10 shadow-xl overflow-hidden animate-pulse">
+ <div className="aspect-[4/3] sm:aspect-auto sm:h-64 bg-white/5 w-full"></div>
+ </div>
+ ))}
+ </div>
+ ) : (
  <motion.div layout className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
  <AnimatePresence>
  {displayedMedia.map((item, i) => (
@@ -289,8 +306,9 @@ export default function MediaGalleryPage() {
  ))}
  </AnimatePresence>
  </motion.div>
+ )}
  
- {displayedMedia.length === 0 && (
+ {!isLoading && displayedMedia.length === 0 && (
  <div className="text-center py-20 text-gta-muted text-lg">
  No media found in this category.
  </div>

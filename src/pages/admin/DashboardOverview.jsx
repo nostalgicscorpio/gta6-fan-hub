@@ -1,12 +1,14 @@
 import { motion } from 'framer-motion';
 import { useAdminData } from '../../hooks/useAdminData';
 import { 
- HiOutlineNewspaper, 
- HiOutlineUsers, 
- HiOutlineFilm, 
- HiOutlinePhotograph, 
- HiOutlineLocationMarker 
+  HiOutlineNewspaper, 
+  HiOutlinePhotograph, 
+  HiOutlineVideoCamera,
+  HiOutlineSparkles,
+  HiOutlinePlay,
+  HiPlus
 } from 'react-icons/hi';
+import { Link } from 'react-router-dom';
 
 function StatCard({ title, value, icon: Icon, colorClass, delay = 0 }) {
  return (
@@ -36,79 +38,93 @@ function StatCard({ title, value, icon: Icon, colorClass, delay = 0 }) {
 }
 
 export default function DashboardOverview() {
- const { data: news, loading: newsLoading } = useAdminData('news');
- const { data: characters, loading: charsLoading } = useAdminData('characters');
- const { data: trailers, loading: trLoading } = useAdminData('trailers');
- const { data: screenshots, loading: ssLoading } = useAdminData('screenshots');
- const { data: locations, loading: locLoading } = useAdminData('locations');
+  const { data: news, loading: newsLoading } = useAdminData('news');
+  
+  // Mock data sizes for other modules (since we moved to Creator Studio)
+  const stats = {
+    videos: 12,
+    aiCreations: 5,
+    gallery: 48,
+    gameplay: 3
+  };
 
- const loading = newsLoading || charsLoading || trLoading || ssLoading || locLoading;
+  const loading = newsLoading;
 
- return (
- <div>
- <div className="mb-8">
- <h2 className="font-display font-bold text-3xl text-white mb-2">Dashboard Overview</h2>
- <p className="text-gta-muted text-sm">Welcome back to the Control Center. System operating normally.</p>
- </div>
+  return (
+    <div className="relative pb-24 lg:pb-0">
+      <div className="mb-8">
+        <h2 className="font-display font-bold text-3xl text-white mb-2">Creator Overview</h2>
+        <p className="text-gta-muted text-sm">Welcome back to the Studio. System operating normally.</p>
+      </div>
 
- {loading ? (
- <div className="flex items-center justify-center h-64 text-primary animate-pulse">
- Loading Data...
- </div>
- ) : (
- <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
- <StatCard 
- title="Total Articles" 
- value={news.length} 
- icon={HiOutlineNewspaper} 
- colorClass="bg-primary"
- delay={0.1}
- />
- <StatCard 
- title="Characters" 
- value={characters.length} 
- icon={HiOutlineUsers} 
- colorClass="bg-gta-cyan"
- delay={0.2}
- />
- <StatCard 
- title="Trailers" 
- value={trailers.length} 
- icon={HiOutlineFilm} 
- colorClass="bg-gta-red"
- delay={0.3}
- />
- <StatCard 
- title="Screenshots" 
- value={screenshots.length} 
- icon={HiOutlinePhotograph} 
- colorClass="bg-gta-purple"
- delay={0.4}
- />
- <StatCard 
- title="Map Markers" 
- value={locations.length} 
- icon={HiOutlineLocationMarker} 
- colorClass="bg-gta-green"
- delay={0.5}
- />
- </div>
- )}
+      {loading ? (
+        <div className="flex items-center justify-center h-64 text-primary animate-pulse">
+          Loading Data...
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+          <StatCard 
+            title="Articles" 
+            value={news.length} 
+            icon={HiOutlineNewspaper} 
+            colorClass="bg-primary"
+            delay={0.1}
+          />
+          <StatCard 
+            title="Videos" 
+            value={stats.videos} 
+            icon={HiOutlineVideoCamera} 
+            colorClass="bg-[#FF0000]"
+            delay={0.2}
+          />
+          <StatCard 
+            title="AI Creations" 
+            value={stats.aiCreations} 
+            icon={HiOutlineSparkles} 
+            colorClass="bg-gta-cyan"
+            delay={0.3}
+          />
+          <StatCard 
+            title="Gallery Assets" 
+            value={stats.gallery} 
+            icon={HiOutlinePhotograph} 
+            colorClass="bg-gta-purple"
+            delay={0.4}
+          />
+          <StatCard 
+            title="Gameplay Uploads" 
+            value={stats.gameplay} 
+            icon={HiOutlinePlay} 
+            colorClass="bg-gta-green"
+            delay={0.5}
+          />
+        </div>
+      )}
 
- {/* System Status Mock */}
- <div className="mt-12">
- <h3 className="font-display font-bold text-xl text-white mb-4">System Status</h3>
- <div className="bg-[#0f0f13] border border-white/5 rounded-xl p-6">
- <div className="flex items-center gap-4 text-sm text-gta-muted mb-4">
- <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)] animate-pulse" />
- <span>Database Connected (Mock InMemory)</span>
- </div>
- <div className="flex items-center gap-4 text-sm text-gta-muted">
- <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)] animate-pulse" />
- <span>Storage Bucket Connected (Local Assets)</span>
- </div>
- </div>
- </div>
- </div>
- );
+      {/* System Status Mock */}
+      <div className="mt-12">
+        <h3 className="font-display font-bold text-xl text-white mb-4">System Status</h3>
+        <div className="bg-[#0f0f13] border border-white/5 rounded-xl p-6">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-4 text-sm text-gta-muted">
+              <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)] animate-pulse" />
+              <span>Supabase Database (Mock Initialized)</span>
+            </div>
+            <div className="flex items-center gap-4 text-sm text-gta-muted">
+              <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)] animate-pulse" />
+              <span>Cloudinary Storage (Mock Ready)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Floating Action Button for Mobile */}
+      <Link 
+        to="/admin/studio"
+        className="fixed bottom-6 right-6 lg:hidden w-14 h-14 bg-primary text-black rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(255,106,0,0.4)] hover:scale-105 transition-transform z-50"
+      >
+        <HiPlus size={28} />
+      </Link>
+    </div>
+  );
 }

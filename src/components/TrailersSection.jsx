@@ -5,10 +5,20 @@ import { trackTrailerClick, trackButtonClick } from '../utils/analytics';
 import { revealVariants, staggerContainer } from '../utils/animations';
 import AssetImage from './AssetImage';
 
-import { trailers } from '../data/trailers';
+import { useState, useEffect } from 'react';
+import { trailerService } from '../services/trailerService';
 
 export default function TrailersSection() {
   const navigate = useNavigate();
+  const [trailers, setTrailers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    trailerService.getTrailers().then(data => {
+      setTrailers(data);
+      setIsLoading(false);
+    });
+  }, []);
 
   const handleTrailerClick = (trailer) => {
     trackTrailerClick(trailer.title);
@@ -42,7 +52,13 @@ export default function TrailersSection() {
           </motion.div>
         </motion.div>
 
-        {/* Featured trailer — large */}
+        {isLoading ? (
+          <div className="py-20 flex justify-center text-white/50 animate-pulse">
+            Loading Trailers...
+          </div>
+        ) : (
+          <>
+            {/* Featured trailer — large */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -148,8 +164,10 @@ export default function TrailersSection() {
                 </p>
               </div>
             </motion.div>
-          ))}
-        </motion.div>
+            ))}
+          </motion.div>
+        </>
+        )}
       </div>
 
     </section>

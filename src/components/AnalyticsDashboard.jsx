@@ -66,7 +66,7 @@ export default function AnalyticsDashboard() {
  animate={{ opacity: 1, scale: 1 }}
  transition={{ delay: 1.5 }}
  onClick={() => setIsOpen(!isOpen)}
- className="fixed bottom-6 left-6 z-50 w-12 h-12 rounded-full glass-card flex items-center justify-center text-primary hover:bg-primary/20 hover:shadow-[0_0_25px_rgba(255,106,0,0.3)] transition-all duration-300 cursor-pointer"
+ className="fixed bottom-[16px] right-[16px] lg:bottom-[24px] lg:right-[24px] z-[9999] w-12 h-12 rounded-full glass-card flex items-center justify-center text-primary hover:bg-primary/20 hover:shadow-[0_0_25px_rgba(255,106,0,0.3)] transition-all duration-300 cursor-pointer"
  aria-label="Toggle analytics dashboard"
  title="Analytics Dashboard"
  >
@@ -79,11 +79,11 @@ export default function AnalyticsDashboard() {
  <AnimatePresence>
  {isOpen && stats && (
  <motion.div
- initial={{ opacity: 0, x: -300 }}
+ initial={{ opacity: 0, x: 300 }}
  animate={{ opacity: 1, x: 0 }}
- exit={{ opacity: 0, x: -300 }}
+ exit={{ opacity: 0, x: 300 }}
  transition={{ duration: 0.35, ease: 'easeOut' }}
- className="fixed bottom-20 left-6 z-50 w-[340px] sm:w-[380px] max-h-[70vh] overflow-y-auto rounded-2xl bg-gta-black/95 backdrop-blur-2xl border border-primary/20 shadow-[0_0_60px_rgba(0,0,0,0.8),0_0_20px_rgba(255,106,0,0.1)]"
+ className="fixed bottom-[80px] right-[16px] lg:bottom-[88px] lg:right-[24px] z-[9998] w-[340px] sm:w-[380px] max-h-[70vh] overflow-y-auto rounded-2xl bg-gta-black/95 backdrop-blur-2xl border border-primary/20 shadow-[0_0_60px_rgba(0,0,0,0.8),0_0_20px_rgba(255,106,0,0.1)]"
  >
  {/* Header */}
  <div className="sticky top-0 z-10 bg-gta-black/95 backdrop-blur-xl px-5 py-4 border-b border-gta-border/30 flex items-center justify-between">

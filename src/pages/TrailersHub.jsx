@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiX, HiCalendar, HiClock, HiEye } from 'react-icons/hi';
-import { trailers } from '../data/trailers';
+import { trailerService } from '../services/trailerService';
 import SEO from '../components/SEO';
 import AssetImage from '../components/AssetImage';
 import NavOffset from '../components/NavOffset';
@@ -9,9 +9,15 @@ import NavOffset from '../components/NavOffset';
 export default function TrailersHub() {
  const [lightboxOpen, setLightboxOpen] = useState(false);
  const [activeImage, setActiveImage] = useState('');
+ const [trailers, setTrailers] = useState([]);
+ const [isLoading, setIsLoading] = useState(true);
 
  useEffect(() => {
  window.scrollTo({ top: 0, behavior: 'instant' });
+ trailerService.getTrailers().then(data => {
+   setTrailers(data);
+   setIsLoading(false);
+ });
  }, []);
 
  const openLightbox = (img) => {
@@ -26,7 +32,15 @@ export default function TrailersHub() {
  document.body.style.overflow = '';
  };
 
- const heroTrailer = trailers.find(t => t.featured) || trailers[0];
+ const heroTrailer = trailers.length > 0 ? (trailers.find(t => t.featured) || trailers[0]) : null;
+
+ if (isLoading) {
+  return (
+   <div className="min-h-screen pt-[var(--navbar-height)] pb-20 flex flex-col items-center justify-center bg-gta-black">
+    <div className="w-16 h-16 border-4 border-white/10 border-t-primary rounded-full animate-spin shadow-[0_0_15px_rgba(255,45,120,0.5)]"></div>
+   </div>
+  );
+ }
 
  return (
  <motion.div

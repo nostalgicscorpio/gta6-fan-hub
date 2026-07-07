@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { HiArrowLeft, HiCalendar, HiClock, HiEye, HiDesktopComputer, HiTag } from 'react-icons/hi';
-import { trailers } from '../data/trailers';
+import { trailerService } from '../services/trailerService';
 import SEO from '../components/SEO';
 import AssetImage from '../components/AssetImage';
 import NavOffset from '../components/NavOffset';
@@ -11,17 +11,37 @@ export default function TrailerPage() {
  const { slug } = useParams();
  const navigate = useNavigate();
  
- const trailerIndex = trailers.findIndex(item => item.slug === slug);
- const trailer = trailers[trailerIndex];
+ const [trailer, setTrailer] = useState(null);
+ const [allTrailers, setAllTrailers] = useState([]);
+ const [isLoading, setIsLoading] = useState(true);
 
- // Prev/Next Navigation
- const prevTrailer = trailerIndex > 0 ? trailers[trailerIndex - 1] : null;
- const nextTrailer = trailerIndex < trailers.length - 1 ? trailers[trailerIndex + 1] : null;
-
- // Scroll to top
  useEffect(() => {
  window.scrollTo({ top: 0, behavior: 'instant' });
+ let isMounted = true;
+ setIsLoading(true);
+
+ trailerService.getTrailers().then(data => {
+   if (!isMounted) return;
+   setAllTrailers(data);
+   const currentTrailer = data.find(item => item.slug === slug);
+   setTrailer(currentTrailer || null);
+   setIsLoading(false);
+ });
+
+ return () => { isMounted = false; };
  }, [slug]);
+
+ if (isLoading) {
+  return (
+   <div className="min-h-screen pt-[var(--navbar-height)] pb-20 flex flex-col items-center justify-center bg-gta-black">
+    <div className="w-16 h-16 border-4 border-white/10 border-t-primary rounded-full animate-spin shadow-[0_0_15px_rgba(255,45,120,0.5)]"></div>
+   </div>
+  );
+ }
+
+ const trailerIndex = allTrailers.findIndex(item => item.slug === slug);
+ const prevTrailer = trailerIndex > 0 ? allTrailers[trailerIndex - 1] : null;
+ const nextTrailer = trailerIndex !== -1 && trailerIndex < allTrailers.length - 1 ? allTrailers[trailerIndex + 1] : null;
 
  if (!trailer) {
  return (
@@ -35,7 +55,7 @@ export default function TrailerPage() {
  }
 
  const relatedTrailers = trailer.relatedTrailers
- ? trailers.filter(item => trailer.relatedTrailers.includes(item.slug))
+ ? allTrailers.filter(item => trailer.relatedTrailers.includes(item.slug))
  : [];
 
  return (

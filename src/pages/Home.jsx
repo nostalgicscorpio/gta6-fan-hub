@@ -1,5 +1,5 @@
 import Hero from '../components/Hero';
-import CountdownTimer from '../components/CountdownTimer';
+
 import NewsSection from '../components/NewsSection';
 import TrailersSection from '../components/TrailersSection';
 import ScreenshotsSection from '../components/ScreenshotsSection';
@@ -26,7 +26,6 @@ export default function Home() {
  }}
  />
  <Hero />
- <CountdownTimer />
  <NewsSection />
  <TrailersSection />
  <ScreenshotsSection />

@@ -22,6 +22,8 @@ import AnalyticsDashboard from './components/AnalyticsDashboard';
 import CustomCursor from './components/CustomCursor';
 import SearchModal from './components/SearchModal';
 import AdminLayout from './components/admin/AdminLayout';
+import Login from './pages/admin/Login';
+import { supabaseAuth } from './services/supabaseAuthService';
 
 function LoadingScreen({ onComplete }) {
  const [progress, setProgress] = useState(0);
@@ -98,7 +100,7 @@ function ScrollToTopButton() {
  animate={{ opacity: 1, scale: 1 }}
  exit={{ opacity: 0, scale: 0.8 }}
  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
- className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-primary/90 text-black flex items-center justify-center shadow-[0_0_25px_rgba(255,106,0,0.4)] hover:bg-primary hover:shadow-[0_0_35px_rgba(255,106,0,0.6)] transition-all duration-300 cursor-pointer backdrop-blur-sm focus-ring btn-glow"
+ className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-12 h-12 rounded-full bg-primary/90 text-black flex items-center justify-center shadow-[0_0_25px_rgba(255,106,0,0.4)] hover:bg-primary hover:shadow-[0_0_35px_rgba(255,106,0,0.6)] transition-all duration-300 cursor-pointer backdrop-blur-sm focus-ring btn-glow"
  aria-label="Scroll to top of page"
  >
  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24" aria-hidden="true">
@@ -127,16 +129,38 @@ function App() {
  return () => window.removeEventListener('keydown', handleKeyDown);
  }, [isSearchOpen]);
 
- const isAdmin = location.pathname.startsWith('/admin');
+  const isAdmin = location.pathname.startsWith('/admin');
+  const isLogin = location.pathname === '/admin/login';
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
 
- if (isAdmin) {
- return (
- <div className="relative bg-[#09090b] min-h-screen overflow-x-hidden text-white font-sans selection:bg-primary/30">
- <CustomCursor />
- <AdminLayout />
- </div>
- );
- }
+  useEffect(() => {
+    if (isAdmin && !isLogin) {
+      const session = supabaseAuth.getSession();
+      if (!session) {
+        window.location.href = '/admin/login';
+      } else {
+        setIsAdminAuthenticated(true);
+      }
+    }
+  }, [isAdmin, isLogin, location.pathname]);
+
+  if (isLogin) {
+    return (
+      <Suspense fallback={<div className="bg-black h-screen" />}>
+        <Login />
+      </Suspense>
+    );
+  }
+
+  if (isAdmin) {
+    if (!isAdminAuthenticated) return <div className="bg-[#09090b] h-screen" />; // waiting for redirect
+    return (
+      <div className="relative bg-[#09090b] min-h-screen overflow-x-hidden text-white font-sans selection:bg-primary/30">
+        <CustomCursor />
+        <AdminLayout />
+      </div>
+    );
+  }
 
  return (
  <div className="relative bg-gta-black min-h-screen overflow-x-hidden">

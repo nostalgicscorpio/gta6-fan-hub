@@ -1,49 +1,73 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { HiArrowLeft, HiPlay, HiDocumentText } from 'react-icons/hi';
-import { characters } from '../data/characters';
 import SEO from '../components/SEO';
-import { trailers } from '../data/trailers';
-import { newsItems } from '../data/news';
+import { characterService } from '../services/characterService';
+import { trailerService } from '../services/trailerService';
+import { newsService } from '../services/newsService';
 import AssetImage from '../components/AssetImage';
 
 export default function CharacterPage() {
  const { slug } = useParams();
  const navigate = useNavigate();
  
- const charIndex = characters.findIndex(item => item.slug === slug);
- const character = characters[charIndex];
+ const [character, setCharacter] = useState(null);
+ const [allCharacters, setAllCharacters] = useState([]);
+ const [relatedTrailers, setRelatedTrailers] = useState([]);
+ const [relatedNews, setRelatedNews] = useState([]);
+ const [isLoading, setIsLoading] = useState(true);
 
- // Prev/Next Navigation
- const prevChar = charIndex > 0 ? characters[charIndex - 1] : null;
- const nextChar = charIndex < characters.length - 1 ? characters[charIndex + 1] : null;
-
- // Scroll to top
  useEffect(() => {
- window.scrollTo({ top: 0, behavior: 'instant' });
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  let isMounted = true;
+  setIsLoading(true);
+
+  Promise.all([
+    characterService.getCharacters(),
+    trailerService.getTrailers(),
+    newsService.fetchNews()
+  ]).then(([chars, trailers, news]) => {
+    if (!isMounted) return;
+    
+    setAllCharacters(chars);
+    const charIdx = chars.findIndex(item => item.slug === slug);
+    const char = chars[charIdx];
+    
+    setCharacter(char);
+
+    if (char) {
+      setRelatedTrailers(char.relatedTrailers ? trailers.filter(t => char.relatedTrailers.includes(t.slug)) : []);
+      setRelatedNews(char.relatedNews ? news.filter(n => char.relatedNews.includes(n.slug)) : []);
+    }
+    setIsLoading(false);
+  });
+
+  return () => { isMounted = false; };
  }, [slug]);
 
- if (!character) {
- return (
- <div className="min-h-screen pt-[var(--navbar-height)] pb-20 px-6 flex flex-col items-center justify-center text-center bg-gta-black">
- <h1 className="font-display text-4xl text-white mb-4">Database Entry Not Found</h1>
- <button onClick={() => navigate('/')} className="text-primary hover:text-white transition-colors cursor-pointer">
- Return to Hub
- </button>
- </div>
- );
+ if (isLoading) {
+  return (
+   <div className="min-h-screen pt-[var(--navbar-height)] pb-20 flex flex-col items-center justify-center bg-gta-black">
+    <div className="w-16 h-16 border-4 border-white/10 border-t-primary rounded-full animate-spin shadow-[0_0_15px_rgba(255,45,120,0.5)]"></div>
+   </div>
+  );
  }
 
- const relatedTrailers = character.relatedTrailers
- ? trailers.filter(t => character.relatedTrailers.includes(t.slug))
- : [];
- 
- const relatedNews = character.relatedNews
- ? newsItems.filter(n => character.relatedNews.includes(n.slug))
- : [];
+ const charIndex = allCharacters.findIndex(item => item.slug === slug);
+ const prevChar = charIndex > 0 ? allCharacters[charIndex - 1] : null;
+ const nextChar = charIndex < allCharacters.length - 1 ? allCharacters[charIndex + 1] : null;
 
-
+ if (!character) {
+  return (
+  <div className="min-h-screen pt-[var(--navbar-height)] pb-20 px-6 flex flex-col items-center justify-center text-center bg-gta-black">
+  <h1 className="font-display text-4xl text-white mb-4">Database Entry Not Found</h1>
+  <button onClick={() => navigate('/')} className="text-primary hover:text-white transition-colors cursor-pointer">
+  Return to Hub
+  </button>
+  </div>
+  );
+ }
 
  const InfoList = ({ title, items }) => {
  if (!items || items.length === 0) return null;

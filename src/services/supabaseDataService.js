@@ -24,7 +24,8 @@ export const supabaseData = {
           category: post.category || 'News',
           cover_image: post.cover_image || null,
           tags: post.tags || '',
-          published: true
+          status: post.status || 'Draft',
+          published: post.status === 'Published'
         }]).select().single();
         return { data, error };
       } else {
@@ -47,7 +48,7 @@ export const supabaseData = {
     },
     select: async () => {
       if (hasSupabase()) {
-        const { data, error } = await supabase.from('posts').select('*').order('created_at', { ascending: false });
+        const { data, error } = await supabase.from('posts').select('*').ilike('status', 'published').order('created_at', { ascending: false });
         // Add fallback properties to match mock data structure for older components
         const mappedData = data ? data.map(d => ({
           ...d,
@@ -57,7 +58,8 @@ export const supabaseData = {
       } else {
         return new Promise((resolve) => {
           setTimeout(() => {
-            resolve({ data: getStorage('mock_posts', initialNews), error: null });
+            const allPosts = getStorage('mock_posts', initialNews);
+            resolve({ data: allPosts.filter(p => p.status === 'Published' || p.published === true || p.status === undefined), error: null });
           }, 300);
         });
       }
@@ -88,7 +90,8 @@ export const supabaseData = {
           type: video.type || 'Gameplay',
           description: video.description || '',
           ai_tool: video.ai_tool || null,
-          ai_prompt: video.ai_prompt || null
+          ai_prompt: video.ai_prompt || null,
+          status: video.status || 'Draft'
         }]).select().single();
         return { data, error };
       } else {
@@ -110,7 +113,7 @@ export const supabaseData = {
     },
     select: async () => {
       if (hasSupabase()) {
-        const { data, error } = await supabase.from('videos').select('*').order('created_at', { ascending: false });
+        const { data, error } = await supabase.from('videos').select('*').ilike('status', 'published').order('created_at', { ascending: false });
         const mappedData = data ? data.map(d => ({
           ...d,
           date: new Date(d.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
@@ -119,7 +122,8 @@ export const supabaseData = {
       } else {
         return new Promise((resolve) => {
           setTimeout(() => {
-            resolve({ data: getStorage('mock_videos', creatorContent.youtube || []), error: null });
+            const allVideos = getStorage('mock_videos', creatorContent.youtube || []);
+            resolve({ data: allVideos.filter(v => v.status === 'Published' || v.status === undefined), error: null });
           }, 300);
         });
       }
@@ -143,37 +147,57 @@ export const supabaseData = {
   gallery: {
     select: async () => {
       if (hasSupabase()) {
-        const { data, error } = await supabase.from('gallery').select('*').order('created_at', { ascending: false });
+        const { data, error } = await supabase.from('gallery').select('*').ilike('status', 'published').order('created_at', { ascending: false });
         return { data: data || [], error };
       }
-      return new Promise((resolve) => setTimeout(() => resolve({ data: getStorage('mock_gallery', initialGallery), error: null }), 300));
+      return new Promise((resolve) => setTimeout(() => {
+        const allGallery = getStorage('mock_gallery', initialGallery);
+        resolve({ data: allGallery.filter(g => g.status === 'Published' || g.status === undefined), error: null });
+      }, 300));
     }
   },
   gameplay: {
     select: async () => {
       if (hasSupabase()) {
-        const { data, error } = await supabase.from('gameplay').select('*').order('created_at', { ascending: false });
+        const { data, error } = await supabase.from('gameplay').select('*').ilike('status', 'published').order('created_at', { ascending: false });
         return { data: data || [], error };
       }
-      return new Promise((resolve) => setTimeout(() => resolve({ data: getStorage('mock_gameplay', initialGameplay), error: null }), 300));
+      return new Promise((resolve) => setTimeout(() => {
+        const allGameplay = getStorage('mock_gameplay', initialGameplay);
+        resolve({ data: allGameplay.filter(g => g.status === 'Published' || g.status === undefined), error: null });
+      }, 300));
     }
   },
   characters: {
     select: async () => {
       if (hasSupabase()) {
-        const { data, error } = await supabase.from('characters').select('*');
+        const { data, error } = await supabase.from('characters').select('*').ilike('status', 'published');
         return { data: data || [], error };
       }
-      return new Promise((resolve) => setTimeout(() => resolve({ data: getStorage('mock_characters', initialCharacters), error: null }), 300));
+      return new Promise((resolve) => setTimeout(() => {
+        const allChars = getStorage('mock_characters', initialCharacters);
+        resolve({ data: allChars.filter(c => c.status === 'Published' || c.status === undefined), error: null });
+      }, 300));
     }
   },
   trailers: {
     select: async () => {
       if (hasSupabase()) {
+        // Handle both publish_status and status, depending on how it was saved
         const { data, error } = await supabase.from('trailers').select('*');
-        return { data: data || [], error };
+        if (data) {
+          const filtered = data.filter(t => 
+            (t.publish_status && t.publish_status.toLowerCase() === 'published') || 
+            (t.status && t.status.toLowerCase() === 'published')
+          );
+          return { data: filtered, error };
+        }
+        return { data: [], error };
       }
-      return new Promise((resolve) => setTimeout(() => resolve({ data: getStorage('mock_trailers', initialTrailers), error: null }), 300));
+      return new Promise((resolve) => setTimeout(() => {
+        const allTrailers = getStorage('mock_trailers', initialTrailers);
+        resolve({ data: allTrailers.filter(t => t.publish_status === 'Published' || t.status === 'Published' || (t.publish_status === undefined && t.status === undefined)), error: null });
+      }, 300));
     }
   }
 };

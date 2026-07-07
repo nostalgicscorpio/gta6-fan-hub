@@ -23,6 +23,11 @@ import CustomCursor from './components/CustomCursor';
 import SearchModal from './components/SearchModal';
 import AdminLayout from './components/admin/AdminLayout';
 import Login from './pages/admin/Login';
+import DashboardOverview from './pages/admin/DashboardOverview';
+import ManageNews from './pages/admin/ManageNews';
+import AIVideoStudio from './pages/admin/AIVideoStudio';
+import ManageMedia from './pages/admin/ManageMedia';
+import AdminSettings from './pages/admin/AdminSettings';
 import { supabaseAuth } from './services/supabaseAuthService';
 
 function LoadingScreen({ onComplete }) {
@@ -157,7 +162,16 @@ function App() {
     return (
       <div className="relative bg-[#09090b] min-h-screen overflow-x-hidden text-white font-sans selection:bg-primary/30">
         <CustomCursor />
-        <AdminLayout />
+        <Routes location={location} key={location.pathname}>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<DashboardOverview />} />
+            <Route path="studio" element={<ManageNews />} />
+            <Route path="ai" element={<AIVideoStudio />} />
+            <Route path="media" element={<ManageMedia />} />
+            <Route path="settings" element={<AdminSettings />} />
+            <Route path="*" element={<DashboardOverview />} />
+          </Route>
+        </Routes>
       </div>
     );
   }

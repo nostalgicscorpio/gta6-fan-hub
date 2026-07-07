@@ -38,7 +38,7 @@ function StatCard({ title, value, icon: Icon, colorClass, delay = 0 }) {
 }
 
 export default function DashboardOverview() {
-  const { data: news, loading: newsLoading } = useAdminData('news');
+  const { data: news, loading: newsLoading } = useAdminData('posts');
   
   // Mock data sizes for other modules (since we moved to Creator Studio)
   const stats = {

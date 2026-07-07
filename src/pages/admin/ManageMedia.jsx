@@ -1,42 +1,47 @@
-import { useState } from 'react';
-import { HiPlus, HiTrash, HiPhotograph, HiVideoCamera, HiCloudUpload } from 'react-icons/hi';
+import { useState, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { HiPlus, HiTrash, HiPhotograph, HiVideoCamera, HiCloudUpload, HiCheckCircle } from 'react-icons/hi';
 import AssetImage from '../../components/AssetImage';
-import { cloudinaryService } from '../../services/cloudinaryService';
+import { useAdminData } from '../../hooks/useAdminData';
+
+const initialForm = {
+  title: '',
+  src: '',
+  category: 'Screenshots',
+  description: ''
+};
 
 export default function ManageMedia() {
+  const { data: gallery, loading, deleteItem, addItem } = useAdminData('gallery');
   const [activeTab, setActiveTab] = useState('images');
-  const [isUploading, setIsUploading] = useState(false);
-  const [media, setMedia] = useState({
-    images: [
-      { id: 'img-1', url: '/images/screenshots/ss-lucia-jason.jpg', title: 'Lucia & Jason' },
-      { id: 'img-2', url: '/images/screenshots/ss-beach.jpg', title: 'Vice City Beach' }
-    ],
-    videos: [
-      { id: 'vid-1', url: 'https://www.w3schools.com/html/mov_bbb.mp4', title: 'Test Video Upload' }
-    ]
-  });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [form, setForm] = useState(initialForm);
 
-  const handleUpload = async () => {
-    setIsUploading(true);
-    // Simulate File Upload
-    const result = await cloudinaryService.uploadMedia(null, activeTab === 'images' ? 'image' : 'video');
-    setMedia(prev => ({
-      ...prev,
-      [activeTab]: [
-        { id: `${activeTab}-${Date.now()}`, url: result.url, title: 'New Upload' },
-        ...prev[activeTab]
-      ]
-    }));
-    setIsUploading(false);
+  const images = useMemo(() => gallery.filter(item => !item.src?.match(/\.(mp4|webm|ogg)$/i)), [gallery]);
+  const videos = useMemo(() => gallery.filter(item => item.src?.match(/\.(mp4|webm|ogg)$/i)), [gallery]);
+  const activeMedia = activeTab === 'images' ? images : videos;
+
+  const handleSave = async () => {
+    if (!form.title || !form.src) {
+      alert("Title and File URL are required!");
+      return;
+    }
+    setIsSaving(true);
+    await addItem(form);
+    setIsSaving(false);
+    setIsModalOpen(false);
+    setForm(initialForm);
   };
 
-  const handleDelete = (id, type) => {
+  const handleDelete = async (id) => {
     if(window.confirm('Delete this media asset?')) {
-      setMedia(prev => ({
-        ...prev,
-        [type]: prev[type].filter(m => m.id !== id)
-      }));
+      await deleteItem(id);
     }
+  };
+
+  if (loading) {
+    return <div className="text-gta-purple animate-pulse p-8">Loading Media Library...</div>;
   }
 
   return (
@@ -46,15 +51,13 @@ export default function ManageMedia() {
           <h2 className="font-display font-bold text-3xl text-white mb-2 flex items-center gap-3">
             <HiPhotograph className="text-gta-purple" /> Media Library
           </h2>
-          <p className="text-gta-muted text-sm">Centralized cloud storage for GTA6WORLD assets.</p>
+          <p className="text-gta-muted text-sm">Centralized storage for GTA6WORLD assets.</p>
         </div>
         <button 
-          onClick={handleUpload}
-          disabled={isUploading}
-          className="flex items-center gap-2 px-6 py-3 bg-gta-purple text-white font-bold text-xs tracking-widest uppercase rounded hover:scale-105 transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)] disabled:opacity-50"
+          onClick={() => setIsModalOpen(true)}
+          className="flex items-center gap-2 px-6 py-3 bg-gta-purple text-white font-bold text-xs tracking-widest uppercase rounded hover:scale-105 transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)]"
         >
-          {isUploading ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <HiCloudUpload className="w-5 h-5" />}
-          {isUploading ? 'Uploading...' : 'Upload File'}
+          <HiCloudUpload className="w-5 h-5" /> Register Asset
         </button>
       </div>
 
@@ -70,35 +73,146 @@ export default function ManageMedia() {
           onClick={() => setActiveTab('videos')}
           className={`flex items-center gap-2 pb-2 px-2 border-b-2 transition-colors ${activeTab === 'videos' ? 'border-red-500 text-white' : 'border-transparent text-white/50 hover:text-white'}`}
         >
-          <HiVideoCamera className="w-5 h-5" /> Source Videos
+          <HiVideoCamera className="w-5 h-5" /> Direct Video Files
         </button>
       </div>
 
       {/* Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {media[activeTab].map((item) => (
+        {activeMedia.map((item) => (
           <div key={item.id} className="relative group rounded-lg overflow-hidden border border-white/5 bg-[#0f0f13]">
             {activeTab === 'images' ? (
-              <AssetImage src={item.url} alt={item.title} className="w-full h-40 object-cover opacity-70 group-hover:opacity-100 transition-opacity" />
+              <AssetImage src={item.src} alt={item.title} className="w-full h-40 object-cover opacity-70 group-hover:opacity-100 transition-opacity bg-black" />
             ) : (
-              <video src={item.url} className="w-full h-40 object-cover opacity-70 group-hover:opacity-100 transition-opacity" />
+              <video src={item.src} className="w-full h-40 object-cover opacity-70 group-hover:opacity-100 transition-opacity bg-black" />
             )}
             
             <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
               <button 
-                onClick={() => handleDelete(item.id, activeTab)}
+                onClick={() => handleDelete(item.id)}
                 className="p-1.5 bg-red-500/80 backdrop-blur text-white rounded hover:bg-red-500"
               >
                 <HiTrash className="w-4 h-4" />
               </button>
             </div>
+            <div className="absolute top-2 left-2">
+              <span className="px-1.5 py-0.5 bg-black/60 backdrop-blur text-[9px] uppercase tracking-wider text-gta-purple rounded">
+                {item.category}
+              </span>
+            </div>
             <div className="p-3 bg-[#0f0f13]">
               <p className="text-xs font-bold text-white truncate">{item.title}</p>
-              <p className="text-[9px] text-gta-muted uppercase tracking-wider mt-1 truncate">{item.url}</p>
+              <p className="text-[9px] text-gta-muted uppercase tracking-wider mt-1 truncate" title={item.src}>{item.src}</p>
             </div>
           </div>
         ))}
+        {activeMedia.length === 0 && (
+          <div className="col-span-full py-12 text-center text-white/50 text-sm">
+            No media found in this category.
+          </div>
+        )}
       </div>
+
+      {/* Add Media Modal */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto"
+          >
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="bg-[#111115] border border-white/10 rounded-2xl w-full max-w-xl p-6 md:p-8 relative shadow-2xl my-8 md:my-auto max-h-[90vh] overflow-y-auto"
+            >
+              <h3 className="font-display font-black text-2xl uppercase tracking-widest mb-6 flex items-center gap-3">
+                <HiCloudUpload className="text-gta-purple" /> Register <span className="text-gta-purple">Media</span>
+              </h3>
+              
+              <div className="space-y-6">
+                <div className="bg-white/5 p-4 rounded-lg border border-white/10 text-xs text-white/70">
+                  <p>Cloudinary direct uploads are disabled in this phase. Please upload your files to the `public/images` directory in the repository, or provide an external CDN URL, and register the path here.</p>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] uppercase tracking-widest text-white/50 mb-2">Title</label>
+                  <input 
+                    type="text" 
+                    value={form.title} 
+                    onChange={e => setForm({...form, title: e.target.value})} 
+                    placeholder="Enter asset title..." 
+                    className="w-full bg-[#050505] border border-white/10 rounded-lg p-4 text-white focus:border-gta-purple outline-none text-sm" 
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] uppercase tracking-widest text-white/50 mb-2">File URL / Path</label>
+                  <input 
+                    type="text" 
+                    value={form.src} 
+                    onChange={e => setForm({...form, src: e.target.value})} 
+                    placeholder="/images/screenshots/new-image.jpg" 
+                    className="w-full bg-[#050505] border border-white/10 rounded-lg p-4 text-white focus:border-gta-purple outline-none text-sm" 
+                  />
+                  {form.src && !form.src.match(/\.(mp4|webm|ogg)$/i) && (
+                    <div className="mt-4 h-32 w-full relative rounded-lg overflow-hidden border border-white/10 bg-black">
+                      <AssetImage src={form.src} className="w-full h-full object-cover opacity-80" />
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-[10px] uppercase tracking-widest text-white/50 mb-2">Category</label>
+                  <select 
+                    value={form.category} 
+                    onChange={e => setForm({...form, category: e.target.value})} 
+                    className="w-full bg-[#050505] border border-white/10 rounded-lg p-4 text-white focus:border-gta-purple outline-none text-sm"
+                  >
+                    <option value="Screenshots">Screenshots</option>
+                    <option value="Artwork">Artwork</option>
+                    <option value="Wallpapers">Wallpapers</option>
+                    <option value="Cover Art">Cover Art</option>
+                    <option value="Characters">Characters</option>
+                    <option value="Locations">Locations</option>
+                    <option value="Promotional">Promotional</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] uppercase tracking-widest text-white/50 mb-2">Description</label>
+                  <textarea 
+                    rows="2" 
+                    value={form.description} 
+                    onChange={e => setForm({...form, description: e.target.value})} 
+                    placeholder="Brief description..." 
+                    className="w-full bg-[#050505] border border-white/10 rounded-lg p-4 text-white focus:border-gta-purple outline-none text-sm"
+                  ></textarea>
+                </div>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-white/5 flex flex-col sm:flex-row justify-end gap-4">
+                <button 
+                  onClick={() => setIsModalOpen(false)} 
+                  disabled={isSaving}
+                  className="px-6 py-4 text-white/50 hover:text-white uppercase text-xs font-bold tracking-widest transition-colors w-full sm:w-auto text-center"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={handleSave} 
+                  disabled={isSaving}
+                  className="px-8 py-4 bg-gta-purple text-white rounded-sm uppercase text-xs font-bold tracking-widest hover:bg-purple-500 transition-all shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:scale-105 w-full sm:w-auto flex items-center justify-center gap-2"
+                >
+                  {isSaving ? 'Saving...' : <><HiCheckCircle className="w-4 h-4" /> Save Asset</>}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

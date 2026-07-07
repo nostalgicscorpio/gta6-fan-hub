@@ -10,12 +10,8 @@ import {
   HiX
 } from 'react-icons/hi';
 
-import DashboardOverview from '../../pages/admin/DashboardOverview';
-import ManageNews from '../../pages/admin/ManageNews';
-import AIVideoStudio from '../../pages/admin/AIVideoStudio';
-import ManageMedia from '../../pages/admin/ManageMedia';
-import AdminSettings from '../../pages/admin/AdminSettings';
-import { useState, useEffect } from 'react';
+import { Outlet } from 'react-router-dom';
+import { useState } from 'react';
 
 function AdminSidebar({ isOpen, setIsOpen }) {
   const links = [
@@ -111,13 +107,7 @@ export default function AdminLayout() {
             transition={{ duration: 0.3 }}
             className="max-w-6xl mx-auto"
           >
-            <Routes>
-              <Route path="/" element={<DashboardOverview />} />
-              <Route path="/studio" element={<ManageNews />} />
-              <Route path="/ai" element={<AIVideoStudio />} />
-              <Route path="/media" element={<ManageMedia />} />
-              <Route path="/settings" element={<AdminSettings />} />
-            </Routes>
+            <Outlet />
           </motion.div>
         </div>
       </div>

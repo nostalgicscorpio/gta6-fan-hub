@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAdminData } from '../../hooks/useAdminData';
-import { HiPlus, HiPencil, HiTrash, HiOutlineVideoCamera, HiOutlineNewspaper, HiOutlineSparkles, HiCheckCircle } from 'react-icons/hi';
+import { HiPlus, HiPencil, HiTrash, HiOutlineSparkles, HiCheckCircle } from 'react-icons/hi';
 import AssetImage from '../../components/AssetImage';
+import MediaUploader from '../../components/admin/MediaUploader';
 
 const initialForm = {
   title: '',
@@ -206,19 +207,13 @@ export default function CreatorStudio() {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] uppercase tracking-widest text-white/50 mb-2">Cover Image URL</label>
-                  <input 
-                    type="text" 
-                    value={form.cover_image} 
-                    onChange={e => setForm({...form, cover_image: e.target.value})} 
-                    placeholder="/images/..." 
-                    className="w-full bg-[#050505] border border-white/10 rounded-lg p-4 text-white focus:border-primary outline-none text-sm" 
+                  <MediaUploader
+                    label="Cover Image URL (or Drag & Drop)"
+                    value={form.cover_image}
+                    onChange={(url) => setForm({...form, cover_image: url})}
+                    type="image"
+                    allowedTypes={['image/jpeg', 'image/png', 'image/webp']}
                   />
-                  {form.cover_image && (
-                    <div className="mt-4 h-32 w-48 relative rounded-lg overflow-hidden border border-white/10">
-                      <AssetImage src={form.cover_image} className="w-full h-full object-cover" />
-                    </div>
-                  )}
                 </div>
 
                 <div>

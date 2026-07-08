@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { HiPlus, HiTrash, HiPhotograph, HiVideoCamera, HiCloudUpload, HiCheckCircle } from 'react-icons/hi';
 import AssetImage from '../../components/AssetImage';
 import { useAdminData } from '../../hooks/useAdminData';
+import MediaUploader from '../../components/admin/MediaUploader';
 
 const initialForm = {
   title: '',
@@ -133,10 +134,6 @@ export default function ManageMedia() {
               </h3>
               
               <div className="space-y-6">
-                <div className="bg-white/5 p-4 rounded-lg border border-white/10 text-xs text-white/70">
-                  <p>Cloudinary direct uploads are disabled in this phase. Please upload your files to the `public/images` directory in the repository, or provide an external CDN URL, and register the path here.</p>
-                </div>
-
                 <div>
                   <label className="block text-[10px] uppercase tracking-widest text-white/50 mb-2">Title</label>
                   <input 
@@ -149,19 +146,17 @@ export default function ManageMedia() {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] uppercase tracking-widest text-white/50 mb-2">File URL / Path</label>
-                  <input 
-                    type="text" 
-                    value={form.src} 
-                    onChange={e => setForm({...form, src: e.target.value})} 
-                    placeholder="/images/screenshots/new-image.jpg" 
-                    className="w-full bg-[#050505] border border-white/10 rounded-lg p-4 text-white focus:border-gta-purple outline-none text-sm" 
+                  <MediaUploader
+                    label="File URL / Path (or Drag & Drop)"
+                    value={form.src}
+                    onChange={(url) => setForm({...form, src: url})}
+                    type={activeTab === 'videos' ? 'video' : 'image'}
+                    allowedTypes={
+                      activeTab === 'videos' 
+                        ? ['video/mp4', 'video/webm']
+                        : ['image/jpeg', 'image/png', 'image/webp']
+                    }
                   />
-                  {form.src && !form.src.match(/\.(mp4|webm|ogg)$/i) && (
-                    <div className="mt-4 h-32 w-full relative rounded-lg overflow-hidden border border-white/10 bg-black">
-                      <AssetImage src={form.src} className="w-full h-full object-cover opacity-80" />
-                    </div>
-                  )}
                 </div>
 
                 <div>

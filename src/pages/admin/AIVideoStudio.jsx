@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { HiPlus, HiSparkles, HiTrash, HiOutlineSparkles, HiPencil, HiCheckCircle } from 'react-icons/hi';
 import { useAdminData } from '../../hooks/useAdminData';
 import AssetImage from '../../components/AssetImage';
+import MediaUploader from '../../components/admin/MediaUploader';
 
 const initialForm = {
   title: '',
@@ -168,13 +169,12 @@ export default function AIVideoStudio() {
               
               <div className="space-y-6">
                 <div>
-                  <label className="block text-[10px] uppercase tracking-widest text-white/50 mb-2">Video File (Upload or URL)</label>
-                  <input 
-                    type="text" 
-                    value={form.video_url} 
-                    onChange={e => setForm({...form, video_url: e.target.value})} 
-                    placeholder="https://..." 
-                    className="w-full bg-[#050505] border border-white/10 rounded-lg p-4 text-white focus:border-gta-cyan outline-none text-sm" 
+                  <MediaUploader
+                    label="Video File (Upload or URL)"
+                    value={form.video_url}
+                    onChange={(url) => setForm({...form, video_url: url})}
+                    type="video"
+                    allowedTypes={['video/mp4', 'video/webm']}
                   />
                 </div>
                 
@@ -190,13 +190,12 @@ export default function AIVideoStudio() {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] uppercase tracking-widest text-white/50 mb-2">Thumbnail URL</label>
-                  <input 
-                    type="text" 
-                    value={form.thumbnail} 
-                    onChange={e => setForm({...form, thumbnail: e.target.value})} 
-                    placeholder="/images/..." 
-                    className="w-full bg-[#050505] border border-white/10 rounded-lg p-4 text-white focus:border-gta-cyan outline-none text-sm" 
+                  <MediaUploader
+                    label="Thumbnail URL (Upload or URL)"
+                    value={form.thumbnail}
+                    onChange={(url) => setForm({...form, thumbnail: url})}
+                    type="image"
+                    allowedTypes={['image/jpeg', 'image/png', 'image/webp']}
                   />
                 </div>
 

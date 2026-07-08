@@ -22,6 +22,7 @@ import AnalyticsDashboard from './components/AnalyticsDashboard';
 import CustomCursor from './components/CustomCursor';
 import SearchModal from './components/SearchModal';
 import VicePhone from './components/VicePhone';
+import LoadingScreen from './components/LoadingScreen';
 import AdminLayout from './components/admin/AdminLayout';
 import Login from './pages/admin/Login';
 import DashboardOverview from './pages/admin/DashboardOverview';
@@ -31,63 +32,6 @@ import ManageMedia from './pages/admin/ManageMedia';
 import AdminSettings from './pages/admin/AdminSettings';
 import { supabaseAuth } from './services/supabaseAuthService';
 
-function LoadingScreen({ onComplete }) {
- const [progress, setProgress] = useState(0);
-
- useEffect(() => {
- const interval = setInterval(() => {
- setProgress((prev) => {
- const next = prev + Math.random() * 18 + 6;
- if (next >= 100) {
- clearInterval(interval);
- setTimeout(onComplete, 400);
- return 100;
- }
- return next;
- });
- }, 120);
- return () => clearInterval(interval);
- }, [onComplete]);
-
- return (
- <motion.div
- exit={{ opacity: 0, scale: 1.05 }}
- transition={{ duration: 0.5, ease: 'easeInOut' }}
- className="fixed inset-0 z-[200] bg-[#030303] flex flex-col items-center justify-center"
- >
- <div className="absolute inset-0 grid-pattern opacity-15" />
- <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/[0.04] rounded-full blur-[150px]" />
-
- <motion.div
- initial={{ opacity: 0, y: 10 }}
- animate={{ opacity: 1, y: 0 }}
- transition={{ duration: 0.4 }}
- className="relative z-10 text-center"
- >
- <h1 className="font-display font-black text-3xl sm:text-4xl tracking-wider mb-1">
- <span className="text-primary ">GTA</span>
- <span className="text-white ml-2">VI</span>
- </h1>
- <p className="text-[9px] tracking-[0.6em] uppercase text-gta-muted/50 mb-8 font-display">
- Fan Hub
- </p>
- </motion.div>
-
- <div className="relative z-10 w-44">
- <div className="h-[2px] bg-white/[0.06] rounded-full overflow-hidden">
- <motion.div
- className="h-full bg-gradient-to-r from-primary to-gta-gold rounded-full"
- animate={{ width: `${Math.min(progress, 100)}%` }}
- transition={{ duration: 0.15, ease: 'linear' }}
- />
- </div>
- <p className="text-center mt-3 text-[9px] tracking-[0.4em] uppercase text-gta-muted/30 font-display">
- {Math.min(Math.round(progress), 100)}%
- </p>
- </div>
- </motion.div>
- );
-}
 
 function ScrollToTopButton() {
  const [visible, setVisible] = useState(false);

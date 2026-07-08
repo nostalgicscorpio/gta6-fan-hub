@@ -1,5 +1,5 @@
 import Hero from '../components/Hero';
-
+import ControlSection from '../components/ControlSection';
 import NewsSection from '../components/NewsSection';
 import TrailersSection from '../components/TrailersSection';
 import ScreenshotsSection from '../components/ScreenshotsSection';
@@ -26,6 +26,7 @@ export default function Home() {
  }}
  />
  <Hero />
+ <ControlSection />
  <NewsSection />
  <TrailersSection />
  <ScreenshotsSection />

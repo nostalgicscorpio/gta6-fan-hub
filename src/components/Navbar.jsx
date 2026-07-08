@@ -17,8 +17,15 @@ export default function Navbar({ onOpenSearch }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
+  const [joystickTarget, setJoystickTarget] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    const handleJoystick = (e) => setJoystickTarget(e.detail);
+    window.addEventListener('joystick-target', handleJoystick);
+    return () => window.removeEventListener('joystick-target', handleJoystick);
+  }, []);
 
   useEffect(() => {
     const onScroll = () => {
@@ -119,7 +126,15 @@ export default function Navbar({ onOpenSearch }) {
         {/* Desktop links (Center Column) */}
         <div className="hidden lg:flex items-center justify-center gap-2">
           {navLinks.map((link) => {
-            const isActive = link.href.startsWith('/#') ? activeSection === link.href.substring(2) : location.pathname === link.href;
+            const isNormallyActive = link.href.startsWith('/#') 
+              ? activeSection === link.href.substring(2) 
+              : location.pathname === link.href;
+            
+            // Add a hook or listener for joystick active states
+            // Actually, we can use a state for joystick target in the component
+            const isActive = joystickTarget ? joystickTarget === link.href : isNormallyActive;
+            const isJoystickActive = joystickTarget === link.href;
+
             return (
               <a
                 key={link.name}
@@ -130,7 +145,7 @@ export default function Navbar({ onOpenSearch }) {
                   isActive 
                     ? 'text-white' 
                     : 'text-[#9A9AA3] hover:text-white'
-                }`}
+                } ${isJoystickActive ? 'scale-110 shadow-[0_0_20px_rgba(255,95,175,0.2)] bg-white/5' : ''}`}
               >
                 <span className="relative z-10">{link.name}</span>
                 {/* Active Indicator Glow */}
@@ -207,7 +222,10 @@ export default function Navbar({ onOpenSearch }) {
           >
             <div className="flex flex-col space-y-6">
               {navLinks.map((link, i) => {
-                const isActive = link.href.startsWith('/#') ? activeSection === link.href.substring(2) : location.pathname === link.href;
+                const isNormallyActive = link.href.startsWith('/#') ? activeSection === link.href.substring(2) : location.pathname === link.href;
+                const isActive = joystickTarget ? joystickTarget === link.href : isNormallyActive;
+                const isJoystickActive = joystickTarget === link.href;
+                
                 return (
                   <motion.a
                     key={link.name}
@@ -219,7 +237,7 @@ export default function Navbar({ onOpenSearch }) {
                     transition={{ delay: 0.1 + (i * 0.05), type: 'spring', stiffness: 300, damping: 25 }}
                     className={`text-2xl font-display font-black tracking-widest uppercase transition-all duration-300 focus-ring rounded-md flex items-center ${
                       isActive ? 'text-[#FF8A2A]' : 'text-[#9A9AA3] hover:text-[#FFFFFF]'
-                    }`}
+                    } ${isJoystickActive ? 'translate-x-4 text-[#FF5FAF] drop-shadow-[0_0_10px_rgba(255,95,175,0.8)]' : ''}`}
                   >
                     {link.name}
                   </motion.a>

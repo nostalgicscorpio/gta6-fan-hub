@@ -36,33 +36,51 @@ export default function ControlSection() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-16 lg:gap-24">
           
+          {/* Mobile Text (Hidden on Desktop) */}
+          <div className="w-full block lg:hidden order-1 mb-2">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="font-display font-black text-white uppercase tracking-tighter mb-4 leading-tight" style={{ fontSize: 'clamp(2rem, 10vw, 4rem)' }}>
+                Take Control of <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF5FAF] to-[#FF8A2A]">Vice City</span>
+              </h2>
+              <p className="text-[#9A9AA3] text-base mb-2 font-light leading-relaxed">
+                Experience the ultimate fan hub. Interact with the elements below to navigate the neon-soaked streets of Leonida and uncover all the intel we have on the next generation of Grand Theft Auto.
+              </p>
+            </motion.div>
+          </div>
+
           {/* Joystick Side */}
-          <div className="w-full lg:w-[42%] flex items-center justify-center lg:pl-12 order-1">
+          <div className="w-full lg:w-[42%] flex items-center justify-center lg:pl-12 order-2 lg:order-1 mt-4 lg:mt-0 mb-4 lg:mb-0">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8 }}
-              className="relative"
+              className="relative w-full flex justify-center"
             >
               <NeonJoystick />
             </motion.div>
           </div>
 
           {/* Text/Cards Side */}
-          <div className="w-full lg:w-[58%] order-2">
+          <div className="w-full lg:w-[58%] order-3 lg:order-2">
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6 }}
             >
-              <h2 className="font-display font-black text-4xl sm:text-5xl lg:text-6xl text-white uppercase tracking-tighter mb-6 leading-tight">
-                Take Control of <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF5FAF] to-[#FF8A2A]">Vice City</span>
-              </h2>
-              <p className="text-[#9A9AA3] text-lg mb-12 max-w-xl font-light leading-relaxed">
-                Experience the ultimate fan hub. Interact with the elements below to navigate the neon-soaked streets of Leonida and uncover all the intel we have on the next generation of Grand Theft Auto.
-              </p>
+              <div className="hidden lg:block">
+                <h2 className="font-display font-black text-4xl sm:text-5xl lg:text-6xl text-white uppercase tracking-tighter mb-6 leading-tight">
+                  Take Control of <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF5FAF] to-[#FF8A2A]">Vice City</span>
+                </h2>
+                <p className="text-[#9A9AA3] text-lg mb-12 max-w-xl font-light leading-relaxed">
+                  Experience the ultimate fan hub. Interact with the elements below to navigate the neon-soaked streets of Leonida and uncover all the intel we have on the next generation of Grand Theft Auto.
+                </p>
+              </div>
               
               <div className="flex flex-col gap-6 max-w-lg">
                 {cards.map((card, idx) => (

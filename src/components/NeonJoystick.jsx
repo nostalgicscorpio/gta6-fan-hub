@@ -48,7 +48,7 @@ export default function NeonJoystick() {
       
       setJoystickState({ distance: dist, angle: ang });
 
-      if (dist > 0.4) {
+      if (dist > 0.6) {
         const target = getTargetZone(ang);
         setActiveTarget((prev) => {
           if (prev?.name !== target.name) {
@@ -145,7 +145,7 @@ export default function NeonJoystick() {
     let intensity = Math.max(0, 1 - diff / 60) * joystickState.distance;
     
     // Make active direction glow stronger
-    if (activeTarget && joystickState.distance > 0.4) {
+    if (activeTarget && joystickState.distance > 0.6) {
       let targetDiff = Math.abs(ledAngle - activeTarget.angle);
       if (targetDiff > 180) targetDiff = 360 - targetDiff;
       if (targetDiff < 30) intensity = 1.2; 
@@ -159,31 +159,22 @@ export default function NeonJoystick() {
   });
   
   return (
-    <div className="relative flex flex-col items-center justify-center p-8 w-full max-w-[400px] aspect-square scale-90 origin-center">
+    <div className="relative flex flex-col items-center justify-center p-8 w-full max-w-[400px] aspect-square scale-[0.65] lg:scale-90 origin-center -my-12 lg:my-0">
       
       <div className="absolute top-4 left-4 text-[10px] font-mono text-white/30 tracking-widest pointer-events-none z-20">
         .vice_control_active
       </div>
 
       {/* Floating Target Label */}
-      <AnimatePresence>
-        {activeTarget && (
-          <motion.div 
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.9 }}
-            className="absolute -top-6 left-1/2 -translate-x-1/2 z-30 pointer-events-none flex flex-col items-center"
-          >
-            <div className="bg-black/90 backdrop-blur-md border border-[#FF5FAF]/50 px-5 py-2 rounded shadow-[0_0_20px_rgba(255,95,175,0.4)] flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-[#FF5FAF] shadow-[0_0_10px_#FF5FAF] animate-pulse" />
-              <span className="text-xs tracking-[0.2em] uppercase font-black text-white">
-                TARGET: <span className="text-[#FF5FAF]">{activeTarget.name}</span>
-              </span>
-            </div>
-            <div className="w-[1px] h-8 bg-gradient-to-b from-[#FF5FAF]/80 to-transparent shadow-[0_0_8px_#FF5FAF]" />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-30 pointer-events-none flex flex-col items-center">
+        <div className={`bg-black/90 backdrop-blur-md border px-5 py-2 rounded flex items-center gap-3 transition-all duration-500 ${activeTarget ? 'border-[#FF5FAF]/50 shadow-[0_0_20px_rgba(255,95,175,0.4)]' : 'border-white/10 shadow-[0_0_15px_rgba(255,255,255,0.02)]'}`}>
+          <div className={`w-2 h-2 rounded-full transition-all duration-500 ${activeTarget ? 'bg-[#FF5FAF] shadow-[0_0_10px_#FF5FAF] animate-pulse' : 'bg-white/20'}`} />
+          <span className={`text-xs tracking-[0.2em] uppercase font-black transition-colors duration-500 ${activeTarget ? 'text-white' : 'text-white/40'}`}>
+            TARGET: <span className={activeTarget ? 'text-[#FF5FAF]' : 'text-white/60'}>{activeTarget ? activeTarget.name : 'FREE ROAM'}</span>
+          </span>
+        </div>
+        <div className={`w-[1px] h-8 transition-colors duration-500 ${activeTarget ? 'bg-gradient-to-b from-[#FF5FAF]/80 to-transparent shadow-[0_0_8px_#FF5FAF]' : 'bg-gradient-to-b from-white/20 to-transparent'}`} />
+      </div>
 
       <motion.div 
         animate={{ 

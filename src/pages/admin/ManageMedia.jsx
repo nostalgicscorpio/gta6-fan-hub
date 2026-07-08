@@ -4,6 +4,7 @@ import { HiPlus, HiTrash, HiPhotograph, HiVideoCamera, HiCloudUpload, HiCheckCir
 import AssetImage from '../../components/AssetImage';
 import { useAdminData } from '../../hooks/useAdminData';
 import MediaUploader from '../../components/admin/MediaUploader';
+import { adminService } from '../../services/adminService';
 
 const initialForm = {
   title: '',
@@ -28,15 +29,32 @@ export default function ManageMedia() {
       alert("Title and File URL are required!");
       return;
     }
+
     setIsSaving(true);
-    await addItem(form);
+
+    const mediaItem = {
+      title: form.title,
+      src: form.src,
+      category: form.category,
+      description: form.description,
+      status: 'Published',
+      created_at: new Date().toISOString()
+    };
+    const result = await adminService.createItem('gallery', mediaItem);
+
+    console.log("🔥 SUPABASE SAVE RESULT:", result);
+
+    if (!result.error && result.data) {
+      await addItem(result.data);
+    }
+
     setIsSaving(false);
     setIsModalOpen(false);
     setForm(initialForm);
   };
 
   const handleDelete = async (id) => {
-    if(window.confirm('Delete this media asset?')) {
+    if (window.confirm('Delete this media asset?')) {
       await deleteItem(id);
     }
   };
@@ -54,7 +72,7 @@ export default function ManageMedia() {
           </h2>
           <p className="text-gta-muted text-sm">Centralized storage for GTA6WORLD assets.</p>
         </div>
-        <button 
+        <button
           onClick={() => setIsModalOpen(true)}
           className="flex items-center gap-2 px-6 py-3 bg-gta-purple text-white font-bold text-xs tracking-widest uppercase rounded hover:scale-105 transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)]"
         >
@@ -64,13 +82,13 @@ export default function ManageMedia() {
 
       {/* Tabs */}
       <div className="flex gap-4 mb-6 border-b border-white/5 pb-2">
-        <button 
+        <button
           onClick={() => setActiveTab('images')}
           className={`flex items-center gap-2 pb-2 px-2 border-b-2 transition-colors ${activeTab === 'images' ? 'border-gta-purple text-white' : 'border-transparent text-white/50 hover:text-white'}`}
         >
           <HiPhotograph className="w-5 h-5" /> Images & Thumbnails
         </button>
-        <button 
+        <button
           onClick={() => setActiveTab('videos')}
           className={`flex items-center gap-2 pb-2 px-2 border-b-2 transition-colors ${activeTab === 'videos' ? 'border-red-500 text-white' : 'border-transparent text-white/50 hover:text-white'}`}
         >
@@ -87,9 +105,9 @@ export default function ManageMedia() {
             ) : (
               <video src={item.src} className="w-full h-40 object-cover opacity-70 group-hover:opacity-100 transition-opacity bg-black" />
             )}
-            
+
             <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button 
+              <button
                 onClick={() => handleDelete(item.id)}
                 className="p-1.5 bg-red-500/80 backdrop-blur text-white rounded hover:bg-red-500"
               >
@@ -117,13 +135,13 @@ export default function ManageMedia() {
       {/* Add Media Modal */}
       <AnimatePresence>
         {isModalOpen && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto"
           >
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
@@ -132,16 +150,16 @@ export default function ManageMedia() {
               <h3 className="font-display font-black text-2xl uppercase tracking-widest mb-6 flex items-center gap-3">
                 <HiCloudUpload className="text-gta-purple" /> Register <span className="text-gta-purple">Media</span>
               </h3>
-              
+
               <div className="space-y-6">
                 <div>
                   <label className="block text-[10px] uppercase tracking-widest text-white/50 mb-2">Title</label>
-                  <input 
-                    type="text" 
-                    value={form.title} 
-                    onChange={e => setForm({...form, title: e.target.value})} 
-                    placeholder="Enter asset title..." 
-                    className="w-full bg-[#050505] border border-white/10 rounded-lg p-4 text-white focus:border-gta-purple outline-none text-sm" 
+                  <input
+                    type="text"
+                    value={form.title}
+                    onChange={e => setForm({ ...form, title: e.target.value })}
+                    placeholder="Enter asset title..."
+                    className="w-full bg-[#050505] border border-white/10 rounded-lg p-4 text-white focus:border-gta-purple outline-none text-sm"
                   />
                 </div>
 
@@ -149,10 +167,10 @@ export default function ManageMedia() {
                   <MediaUploader
                     label="File URL / Path (or Drag & Drop)"
                     value={form.src}
-                    onChange={(url) => setForm({...form, src: url})}
+                    onChange={(url) => setForm({ ...form, src: url })}
                     type={activeTab === 'videos' ? 'video' : 'image'}
                     allowedTypes={
-                      activeTab === 'videos' 
+                      activeTab === 'videos'
                         ? ['video/mp4', 'video/webm']
                         : ['image/jpeg', 'image/png', 'image/webp']
                     }
@@ -161,9 +179,9 @@ export default function ManageMedia() {
 
                 <div>
                   <label className="block text-[10px] uppercase tracking-widest text-white/50 mb-2">Category</label>
-                  <select 
-                    value={form.category} 
-                    onChange={e => setForm({...form, category: e.target.value})} 
+                  <select
+                    value={form.category}
+                    onChange={e => setForm({ ...form, category: e.target.value })}
                     className="w-full bg-[#050505] border border-white/10 rounded-lg p-4 text-white focus:border-gta-purple outline-none text-sm"
                   >
                     <option value="Screenshots">Screenshots</option>
@@ -178,26 +196,26 @@ export default function ManageMedia() {
 
                 <div>
                   <label className="block text-[10px] uppercase tracking-widest text-white/50 mb-2">Description</label>
-                  <textarea 
-                    rows="2" 
-                    value={form.description} 
-                    onChange={e => setForm({...form, description: e.target.value})} 
-                    placeholder="Brief description..." 
+                  <textarea
+                    rows="2"
+                    value={form.description}
+                    onChange={e => setForm({ ...form, description: e.target.value })}
+                    placeholder="Brief description..."
                     className="w-full bg-[#050505] border border-white/10 rounded-lg p-4 text-white focus:border-gta-purple outline-none text-sm"
                   ></textarea>
                 </div>
               </div>
 
               <div className="mt-8 pt-6 border-t border-white/5 flex flex-col sm:flex-row justify-end gap-4">
-                <button 
-                  onClick={() => setIsModalOpen(false)} 
+                <button
+                  onClick={() => setIsModalOpen(false)}
                   disabled={isSaving}
                   className="px-6 py-4 text-white/50 hover:text-white uppercase text-xs font-bold tracking-widest transition-colors w-full sm:w-auto text-center"
                 >
                   Cancel
                 </button>
-                <button 
-                  onClick={handleSave} 
+                <button
+                  onClick={handleSave}
                   disabled={isSaving}
                   className="px-8 py-4 bg-gta-purple text-white rounded-sm uppercase text-xs font-bold tracking-widest hover:bg-purple-500 transition-all shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:scale-105 w-full sm:w-auto flex items-center justify-center gap-2"
                 >

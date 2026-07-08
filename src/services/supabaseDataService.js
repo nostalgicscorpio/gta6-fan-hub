@@ -32,12 +32,12 @@ export const supabaseData = {
         return new Promise((resolve) => {
           setTimeout(() => {
             const posts = getStorage('mock_posts', initialNews);
-            const newPost = { 
-              ...post, 
-              id: Date.now().toString(), 
+            const newPost = {
+              ...post,
+              id: Date.now().toString(),
               slug: post.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
               date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-              created_at: new Date().toISOString() 
+              created_at: new Date().toISOString()
             };
             posts.unshift(newPost);
             localStorage.setItem('mock_posts', JSON.stringify(posts));
@@ -98,11 +98,11 @@ export const supabaseData = {
         return new Promise((resolve) => {
           setTimeout(() => {
             const videos = getStorage('mock_videos', creatorContent.youtube || []);
-            const newVideo = { 
-              ...video, 
-              id: Date.now().toString(), 
+            const newVideo = {
+              ...video,
+              id: Date.now().toString(),
               date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-              created_at: new Date().toISOString() 
+              created_at: new Date().toISOString()
             };
             videos.unshift(newVideo);
             localStorage.setItem('mock_videos', JSON.stringify(videos));
@@ -147,15 +147,20 @@ export const supabaseData = {
   gallery: {
     select: async () => {
       if (hasSupabase()) {
-        const { data, error } = await supabase.from('gallery').select('*').ilike('status', 'published').order('created_at', { ascending: false });
+        const { data, error } = await supabase
+          .from('gallery')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        console.log("🔥 SUPABASE GALLERY FETCH:", data);
+
         return { data: data || [], error };
       }
-      return new Promise((resolve) => setTimeout(() => {
-        const allGallery = getStorage('mock_gallery', initialGallery);
-        resolve({ data: allGallery.filter(g => g.status === 'Published' || g.status === undefined), error: null });
-      }, 300));
+
+      return { data: [], error: null };
     }
   },
+
   gameplay: {
     select: async () => {
       if (hasSupabase()) {
@@ -186,8 +191,8 @@ export const supabaseData = {
         // Handle both publish_status and status, depending on how it was saved
         const { data, error } = await supabase.from('trailers').select('*');
         if (data) {
-          const filtered = data.filter(t => 
-            (t.publish_status && t.publish_status.toLowerCase() === 'published') || 
+          const filtered = data.filter(t =>
+            (t.publish_status && t.publish_status.toLowerCase() === 'published') ||
             (t.status && t.status.toLowerCase() === 'published')
           );
           return { data: filtered, error };

@@ -90,7 +90,7 @@ export default function Navbar({ onOpenSearch }) {
       transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled || mobileOpen
-          ? 'bg-[rgba(11,11,13,0.7)] backdrop-blur-xl border-b border-white/5 shadow-2xl'
+          ? 'bg-white/[0.02] backdrop-blur-2xl border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.5)]'
           : 'bg-transparent border-b border-transparent'
       }`}
     >
@@ -126,15 +126,25 @@ export default function Navbar({ onOpenSearch }) {
                 href={link.href}
                 onClick={(e) => handleNavClick(e, link.href)}
                 aria-current={isActive ? 'page' : undefined}
-                className={`relative px-4 py-2 text-xs font-bold tracking-widest uppercase rounded-sm transition-all duration-300 group focus-ring ${
+                className={`relative px-4 py-2 text-xs font-bold tracking-widest uppercase rounded-md transition-all duration-300 group focus-ring overflow-hidden ${
                   isActive 
-                    ? 'text-[#FF8A2A]' 
-                    : 'text-[#9A9AA3] hover:text-[#FF5FAF]'
+                    ? 'text-white' 
+                    : 'text-[#9A9AA3] hover:text-white'
                 }`}
               >
-                {link.name}
-                <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-[1px] rounded-full transition-all duration-300 ease-out ${
-                  isActive ? 'w-1/2 bg-[#FF8A2A]' : 'w-0 bg-[#FF5FAF] group-hover:w-1/3'
+                <span className="relative z-10">{link.name}</span>
+                {/* Active Indicator Glow */}
+                {isActive && (
+                  <motion.div
+                    layoutId="activeTab"
+                    className="absolute inset-0 bg-gradient-to-r from-[#FF8A2A]/20 to-[#FF5FAF]/20 blur-[2px]"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                )}
+                <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] rounded-full transition-all duration-300 ease-out z-20 ${
+                  isActive ? 'w-3/4 bg-gradient-to-r from-[#FF8A2A] to-[#FF5FAF] shadow-[0_0_8px_rgba(255,138,42,0.8)]' : 'w-0 bg-white/50 group-hover:w-1/2'
                 }`} />
               </a>
             );

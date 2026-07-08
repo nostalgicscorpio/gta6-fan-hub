@@ -229,10 +229,13 @@ function App() {
  </ErrorBoundary>
  <Footer />
  <ScrollToTopButton />
- <AnalyticsDashboard />
  <CustomCursor />
  <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
- <VicePhone />
+ 
+ <div className="fixed bottom-[20px] right-[20px] lg:bottom-[32px] lg:right-[32px] z-[9999] flex flex-col-reverse items-end gap-[14px] lg:gap-[22px] pointer-events-none *:pointer-events-auto">
+   <VicePhone />
+   <AnalyticsDashboard />
+ </div>
  </motion.div>
  )}
  </div>

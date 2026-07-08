@@ -94,7 +94,7 @@ export default function VicePhone() {
       {/* Floating Action Button */}
       <motion.button
         onClick={togglePhone}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-[#FF5FAF] to-[#9D4EDD] shadow-[0_0_20px_rgba(255,95,175,0.4)] flex items-center justify-center text-white hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-white/50"
+        className="relative z-50 w-14 h-14 shrink-0 rounded-full bg-gradient-to-br from-[#FF5FAF] to-[#9D4EDD] shadow-[0_0_20px_rgba(255,95,175,0.4)] flex items-center justify-center text-white hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-white/50"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
       >
@@ -110,7 +110,7 @@ export default function VicePhone() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 50, scale: 0.9 }}
             transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-            className="fixed bottom-24 right-6 sm:right-12 z-[100] w-[320px] sm:w-[360px] h-[640px] max-h-[80vh] bg-black rounded-[40px] shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(255,95,175,0.2)] border-[8px] border-[#1a1a1c] overflow-hidden flex flex-col"
+            className="fixed bottom-[90px] right-[20px] lg:bottom-[100px] lg:right-[32px] z-[100] w-[320px] sm:w-[360px] h-[640px] max-h-[80vh] bg-black rounded-[40px] shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(255,95,175,0.2)] border-[8px] border-[#1a1a1c] overflow-hidden flex flex-col"
           >
             {/* Inner Screen Bezel */}
             <div className="absolute inset-0 border border-white/10 rounded-[32px] pointer-events-none z-50" />

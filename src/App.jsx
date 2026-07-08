@@ -21,6 +21,7 @@ import Footer from './components/Footer';
 import AnalyticsDashboard from './components/AnalyticsDashboard';
 import CustomCursor from './components/CustomCursor';
 import SearchModal from './components/SearchModal';
+import VicePhone from './components/VicePhone';
 import AdminLayout from './components/admin/AdminLayout';
 import Login from './pages/admin/Login';
 import DashboardOverview from './pages/admin/DashboardOverview';
@@ -231,6 +232,7 @@ function App() {
  <AnalyticsDashboard />
  <CustomCursor />
  <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+ <VicePhone />
  </motion.div>
  )}
  </div>

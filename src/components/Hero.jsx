@@ -89,6 +89,51 @@ export default function Hero() {
         ))}
       </motion.div>
 
+      {/* Cinematic Character Layers */}
+      {/* Left Character: Lucia */}
+      <motion.div
+        className="absolute bottom-0 lg:-bottom-[5%] left-[-20%] sm:left-[-10%] lg:left-[2%] 2xl:left-[8%] z-[5] pointer-events-none h-[65vh] lg:h-[95vh] w-full max-w-[400px] lg:max-w-[700px] flex items-end justify-center opacity-40 lg:opacity-100 mix-blend-screen lg:mix-blend-normal"
+        style={{ y: useTransform(scrollYProgress, [0, 1], ['0%', '25%']) }}
+        animate={{ y: [0, -15, 0] }}
+        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <div className="relative w-full h-full">
+          {/* Neon rim lighting glow */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] from-[#FF5FAF]/40 to-transparent blur-[80px] rounded-full scale-75 lg:scale-90 -translate-y-[10%]" />
+          <img 
+            src="/images/characters/lucia-hero.png" 
+            alt=""
+            loading="lazy"
+            className="relative w-full h-full object-contain object-bottom drop-shadow-[0_0_40px_rgba(255,95,175,0.3)] transition-opacity duration-1000"
+            onError={(e) => {
+              e.target.style.opacity = '0';
+            }}
+          />
+        </div>
+      </motion.div>
+
+      {/* Right Character: Jason */}
+      <motion.div
+        className="absolute bottom-0 lg:-bottom-[5%] right-[-20%] sm:right-[-10%] lg:right-[2%] 2xl:right-[8%] z-[5] pointer-events-none h-[65vh] lg:h-[95vh] w-full max-w-[400px] lg:max-w-[700px] flex items-end justify-center opacity-40 lg:opacity-100 mix-blend-screen lg:mix-blend-normal"
+        style={{ y: useTransform(scrollYProgress, [0, 1], ['0%', '18%']) }}
+        animate={{ y: [0, -20, 0] }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+      >
+        <div className="relative w-full h-full">
+          {/* Neon rim lighting glow */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] from-[#FF8A2A]/40 to-transparent blur-[80px] rounded-full scale-75 lg:scale-90 -translate-y-[10%]" />
+          <img 
+            src="/images/characters/jason-hero.png" 
+            alt=""
+            loading="lazy"
+            className="relative w-full h-full object-contain object-bottom drop-shadow-[0_0_40px_rgba(255,138,42,0.3)] transition-opacity duration-1000"
+            onError={(e) => {
+              e.target.style.opacity = '0';
+            }}
+          />
+        </div>
+      </motion.div>
+
       {/* Main Content Centered with Glassmorphism overlay for the content block */}
       <div className="page-container relative z-10 flex flex-col items-center justify-center text-center pt-32 pb-16 min-h-screen w-full">
         
